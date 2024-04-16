@@ -6,6 +6,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * The model for the Astro puzzle
+ *
+ * @author CS RIT
+ * @author Quang Huynh (qth9368)
+ */
 public class AstroModel {
     /** the collection of observers of this model */
     private final List<Observer<AstroModel, String>> observers = new LinkedList<>();
@@ -32,6 +38,10 @@ public class AstroModel {
         }
     }
 
+    /**
+     * Creates a new game
+     * @param filename name of Astro puzzle
+     */
     public AstroModel(String filename) throws IOException {
     }
 }

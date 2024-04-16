@@ -5,16 +5,33 @@ import puzzles.astro.model.AstroModel;
 
 import java.io.IOException;
 import java.util.Scanner;
-
+/**
+ * The plain text UI for the Astro puzzle.
+ * This class encapsulates both View and Controller portions of MVC architecture
+ *
+ * @author CS RIT
+ * @author Quang Huynh (qth9368)
+ */
 public class AstroPTUI implements Observer<AstroModel, String> {
     private AstroModel model;
 
+    /**
+     * Create the PTUI
+     *
+     * @param filename filename of Astro puzzle
+     */
     public void init(String filename) throws IOException {
         this.model = new AstroModel(filename);
         this.model.addObserver(this);
         displayHelp();
     }
 
+    /**
+     * The update for the PTUI prints the model and other states
+     *
+     * @param model the model
+     * @param data data from model sent to view to inform about what happened
+     */
     @Override
     public void update(AstroModel model, String data) {
         // for demonstration purposes
@@ -22,6 +39,9 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         System.out.println(model);
     }
 
+    /**
+     * Displays list of available commands in standard output
+     */
     private void displayHelp() {
         System.out.println( "h(int)              -- hint next move" );
         System.out.println( "l(oad) filename     -- load new puzzle file" );
@@ -31,6 +51,9 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         System.out.println( "r(eset)             -- reset the current game" );
     }
 
+    /**
+     * The run loop prompts for user input and makes calls into the Model.
+     */
     public void run() {
         Scanner in = new Scanner( System.in );
         for ( ; ; ) {
@@ -48,6 +71,11 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         }
     }
 
+    /**
+     * The main routine.
+     *
+     * @param args command line arguments (unused)
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java AstroPTUI filename");
