@@ -1,0 +1,20 @@
+File: data/astro/astro-1.txt
+. C . 
+. * . 
+B . A 
+Total configs: 12
+Unique configs: 7
+Step 0: 
+. C . 
+. * . 
+B . A 
+
+Step 1: 
+. C . 
+. * . 
+B A . 
+
+Step 2: 
+. C . 
+. A . 
+B . . 

@@ -1,0 +1,28 @@
+Die #0: File: die-20.txt, Faces: 20
+	0=[8, C, H]
+	1=[7, C, I]
+	2=[B, H, J]
+	3=[F, G, J]
+	4=[A, D, H]
+	5=[C, E, H]
+	6=[9, D, F]
+	7=[1, E, G]
+	8=[0, F, J]
+	9=[6, A, I]
+	A=[8, B, G]
+	B=[0, 2, E]
+	C=[1, 5, A]
+	D=[4, 6, J]
+	E=[5, 7, B]
+	F=[3, 6, 8]
+	G=[0, 3, 7]
+	H=[2, 4, 5]
+	I=[1, 3, 9]
+	J=[2, 8, D]
+Start: I, End: E
+Total configs: 34
+Unique configs: 18
+Step 0: I
+Step 1: 1
+Step 2: 7
+Step 3: E

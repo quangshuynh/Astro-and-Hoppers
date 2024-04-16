@@ -1,0 +1,9 @@
+File: data/astro/astro-0.txt
+B * . . A 
+Total configs: 4
+Unique configs: 3
+Step 0: 
+B * . . A 
+
+Step 1: 
+B A . . . 

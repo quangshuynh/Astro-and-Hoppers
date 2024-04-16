@@ -1,0 +1,56 @@
+File: data/astro/astro-2.txt
+. . . . . 
+. B . . . 
+. . * . C 
+. . . . . 
+D . E . A 
+Total configs: 551
+Unique configs: 219
+Step 0: 
+. . . . . 
+. B . . . 
+. . * . C 
+. . . . . 
+D . E . A 
+
+Step 1: 
+. . . . . 
+. B . . . 
+. . * . C 
+. . . . . 
+D E . . A 
+
+Step 2: 
+. . . . . 
+. B . . . 
+. E * . C 
+. . . . . 
+D . . . A 
+
+Step 3: 
+. . . . . 
+. B . . . 
+. . * E C 
+. . . . . 
+D . . . A 
+
+Step 4: 
+. . . . . 
+. B . . . 
+. . * E C 
+. . . . . 
+D A . . . 
+
+Step 5: 
+. . . . . 
+. B . . . 
+. A * E C 
+. . . . . 
+D . . . . 
+
+Step 6: 
+. . . . . 
+. B . . . 
+. . A E C 
+. . . . . 
+D . . . . 

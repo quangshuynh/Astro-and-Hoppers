@@ -1,0 +1,8 @@
+Die #0: File: die-2.txt, Faces: 2
+	1=[2]
+	2=[1]
+Start: 1, End: 2
+Total configs: 2
+Unique configs: 2
+Step 0: 1
+Step 1: 2

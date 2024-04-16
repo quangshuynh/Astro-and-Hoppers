@@ -1,0 +1,36 @@
+File: data/astro/astro-3.txt
+A . . . C 
+. E . . . 
+F . * B . 
+. . D . . 
+Total configs: 104
+Unique configs: 56
+Step 0: 
+A . . . C 
+. E . . . 
+F . * B . 
+. . D . . 
+
+Step 1: 
+. . . A C 
+. E . . . 
+F . * B . 
+. . D . . 
+
+Step 2: 
+. . . . C 
+. E . A . 
+F . * B . 
+. . D . . 
+
+Step 3: 
+. . . . C 
+. E A . . 
+F . * B . 
+. . D . . 
+
+Step 4: 
+. . . . C 
+. E . . . 
+F . A B . 
+. . D . . 

@@ -1,0 +1,9 @@
+File: data/astro/astro-9.txt
+C . B . A 
+. G . H . 
+F . . . . 
+. . . * . 
+D . E . . 
+Total configs: 1239219
+Unique configs: 300267
+No solution

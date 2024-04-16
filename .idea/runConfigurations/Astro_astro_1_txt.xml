@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Astro astro-1.txt" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="puzzles.astro.solver.Astro" />
+    <module name="AstroHoppers" />
+    <option name="PROGRAM_PARAMETERS" value="astro-1.txt" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data/astro" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="puzzles.astro.solver.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

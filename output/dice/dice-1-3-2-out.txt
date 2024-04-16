@@ -1,0 +1,7 @@
+Die #0: File: die-2.txt, Faces: 2
+	1=[2]
+	2=[1]
+Start: 1, End: 3
+Total configs: 3
+Unique configs: 2
+No solution
