@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
     private AstroModel model;
+    private String filename;
+    private Label status;
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
@@ -31,7 +33,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      * Initialize AstroModel with getting filename and add observer
      */
     public void init() {
-        String filename = getParameters().getRaw().get(0);
+        filename = getParameters().getRaw().get(0);
     }
 
     /**
@@ -42,12 +44,12 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     @Override
     public void start(Stage stage) throws Exception {
         BorderPane main = new BorderPane(); // main borderpane for everything
+
+        /** Game Grid (center) */
         GridPane game = new GridPane();  // game grid
         game.setPadding(new Insets(10, 10, 10, 10));  // set padding
         game.setVgap(1);  // vertical gap inbetween tiles
         game.setHgap(1);  // horizontal gap inbetween tiles
-
-        /** Game Grid */
         for(int row = 0; row < 5; row++) {  // 5 rows (change to getRow later)
             for(int col = 0; col < 5; col++) {  // 5 columns (change to getCol later)
                 Label tile = new Label("");
@@ -60,13 +62,17 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
             }
         }
 
-        /** Direction Buttons */
+        /** Direction Buttons (right) */
         GridPane buttonsGrid = new GridPane();
         buttonsGrid.setAlignment(Pos.CENTER);
         Button north = new Button("N");
         Button south = new Button("S");
         Button east = new Button("E");
         Button west = new Button("W");
+        north.setStyle("-fx-font-weight: bold; -fx-font-size:16");
+        south.setStyle("-fx-font-weight: bold; -fx-font-size:16");
+        east.setStyle("-fx-font-weight: bold; -fx-font-size:16");
+        west.setStyle("-fx-font-weight: bold; -fx-font-size:16");
         buttonsGrid.add(north, 1, 0);
         buttonsGrid.add(south, 1, 2);
         buttonsGrid.add(east, 2, 1);
@@ -76,21 +82,29 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         arrows.getChildren().addAll(buttonsGrid);
         buttonsGrid.setPadding(new Insets(0, 7, 0, 0));
 
-        /** FlowPane Buttons */
+        /** FlowPane Buttons (bottom) */
         FlowPane fp = new FlowPane();
         fp.setPadding(new Insets(2, 0, 5, 0));
         fp.setAlignment(Pos.CENTER);
         String[] buttonLabels = {"Load", "Reset", "Hint"};
-        for (String label : buttonLabels) {
+        for(String label : buttonLabels) {
             Button button = new Button(label);
             button.setStyle("-fx-font-size:18");
             fp.getChildren().add(button);
         }
 
+        /** Loaded: ? (top) */
+        HBox top = new HBox();
+        status = new Label("Loaded: " + filename); // filename
+        status.setStyle("-fx-font-size:15");
+        top.getChildren().add(status);
+        top.setAlignment(Pos.CENTER);
+
         /** Main adding */
         main.setCenter(game);
         main.setRight(buttonsGrid);
         main.setBottom(fp);
+        main.setTop(top);
 
         /** Scene */
         Scene scene = new Scene(main);
