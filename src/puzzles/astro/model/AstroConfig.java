@@ -172,7 +172,9 @@ public class AstroConfig implements Configuration{
             for (int col = 0; col < cols; col++) {
                 sb.append(grid[row][col]).append(" ");
             }
-            sb.append("\n");
+            if(row < rows - 1) {  // removes space from last line
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }
