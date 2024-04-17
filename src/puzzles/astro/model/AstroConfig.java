@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Represents a configuration for solving Astro puzzles
@@ -17,6 +18,11 @@ import java.util.HashSet;
  */
 
 public class AstroConfig implements Configuration{
+    private String[][] grid;
+    private String astroCoords;
+    private String goalCoords;
+    private int rows;
+    private int cols;
     /**
      * Construct new AstroConfig
      *
@@ -28,22 +34,23 @@ public class AstroConfig implements Configuration{
             /** Read dimension info */
             String line = br.readLine();
             String dim[] = line.split("\\s+");
-            int rows = Integer.parseInt(dim[0]);  // first line, first int is row
-            int columns = Integer.parseInt(dim[1]); // first line, second int is col
+            rows = Integer.parseInt(dim[0]);  // first line, first int is row
+            cols = Integer.parseInt(dim[1]); // first line, second int is col
+            grid = new String[rows][cols];  // Initialize grid array with the specified dimensions
 
             /** Read goal info */
             line = br.readLine();
             String[] goalLine = line.split("\\s+");
             int goalRow = Integer.parseInt(goalLine[1].split(",")[0]);
             int goalColumn = Integer.parseInt(goalLine[1].split(",")[1]);
-            String goalCoords = goalRow + "," + goalColumn;
+            goalCoords = goalRow + "," + goalColumn;
 
             /** Read astronaut info */
             line = br.readLine();
             String[] astroLine = line.split("\\s+");
             int astroRow = Integer.parseInt(astroLine[1].split(",")[0]);
             int astroColumn = Integer.parseInt(astroLine[1].split(",")[1]);
-            String astroCoords = astroRow + "," + astroColumn;
+            astroCoords = astroRow + "," + astroColumn;
 
             /** Read number of robots and robot info */
             line = br.readLine();
@@ -57,17 +64,26 @@ public class AstroConfig implements Configuration{
                 int robotColumn = Integer.parseInt(robotInfo[1].split(",")[1]);
                 robots.add(new Robot(robotSymbol, robotRow, robotColumn));
             }
+
+            /** Assign Grid */
+            for(int row = 0; row < rows; row++) {
+                line = br.readLine();  // read the next line of the grid
+                String[] rowValues = line.split("\\s+");
+                for(int col = 0; col < cols; col++) {
+                    grid[row][col] = rowValues[col];
+                }
+            }
         }
     }
 
     /**
-     * Checks if the current config is a solution to clock puzzle
+     * Checks if the current config is a solution to Astro puzzle
      *
      * @return true if the config is solution, false otherwise.
      */
     @Override
     public boolean isSolution() {
-        return false;
+        return Objects.equals(astroCoords, goalCoords);
     }
 
     /**
@@ -100,7 +116,7 @@ public class AstroConfig implements Configuration{
     public int hashCode() { return 0; }
 
     /**
-     * Provides each step (current step)
+     * Prints Astro grid
      *
      * @return Return each step of solution
      */
