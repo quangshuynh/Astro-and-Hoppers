@@ -3,15 +3,11 @@ package puzzles.astro.model;
 import puzzles.astro.solver.Astro;
 import puzzles.astro.solver.Robot;
 import puzzles.common.solver.Configuration;
-import puzzles.dice.DiceConfig;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a configuration for solving Astro puzzles
@@ -86,6 +82,34 @@ public class AstroConfig implements Configuration{
     }
 
     /**
+     * AstroConfig constructor
+     *
+     * @param other other AstroConfig
+     */
+    public AstroConfig(AstroConfig other) {
+        this.rows = other.rows;
+        this.cols = other.cols;
+        this.grid = copyGrid(other.grid);
+        this.astroCoords = other.astroCoords;
+        this.goalCoords = other.goalCoords;
+        this.neighbors = new HashSet<>();
+    }
+
+    /**
+     * Copies other grid
+     *
+     * @param original original grid
+     * @return copied grid
+     */
+    private String[][] copyGrid(String[][] original) {
+        String[][] newGrid = new String[original.length][original[0].length];
+        for (int i = 0; i < original.length; i++) {
+            System.arraycopy(original[i], 0, newGrid[i], 0, original[i].length);
+        }
+        return newGrid;
+    }
+
+    /**
      * Checks if the current config is a solution to Astro puzzle
      *
      * @return true if the config is solution, false otherwise.
@@ -102,7 +126,53 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public Collection<Configuration> getNeighbors() {
-        return null;
+        List<Configuration> neighbors = new ArrayList<>();
+        int[] astroPosition = Arrays.stream(astroCoords.split(",")).mapToInt(Integer::parseInt).toArray();
+        int astroRow = astroPosition[0];
+        int astroCol = astroPosition[1];
+        neighbors.addAll(generateMoves(astroRow, astroCol, "A"));
+        for(int row = 0; row < rows; row++) {
+            for(int col = 0; col < cols; col++) {
+                if(grid[row][col].matches("[A-Z]") && !grid[row][col].equals("A")) { // robots
+                    neighbors.addAll(generateMoves(row, col, grid[row][col]));
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    /**
+     * Generates all possible moves for a piece at a given position.
+     */
+    private List<Configuration> generateMoves(int row, int col, String piece) {
+        List<Configuration> moves = new ArrayList<>();
+        int[] rowOffsets = {-1, 1, 0, 0};
+        int[] colOffsets = {0, 0, -1, 1};
+        for(int i = 0; i < rowOffsets.length; i++) {
+            int newRow = row;
+            int newCol = col;
+            while(canMove(newRow + rowOffsets[i], newCol + colOffsets[i])) {
+                newRow += rowOffsets[i];
+                newCol += colOffsets[i];
+            }
+            if(newRow != row || newCol != col) {
+                AstroConfig newConfig = new AstroConfig(this);
+                newConfig.grid[row][col] = ".";
+                newConfig.grid[newRow][newCol] = piece;
+                if(piece.equals("A")) {
+                    newConfig.astroCoords = newRow + "," + newCol;
+                }
+                moves.add(newConfig);
+            }
+        }
+        return moves;
+    }
+
+    /**
+     * Checks if a cell is within bounds and not occupied by another piece.
+     */
+    private boolean canMove(int newRow, int newCol) {
+        return newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol].equals(".");
     }
 
     /**
