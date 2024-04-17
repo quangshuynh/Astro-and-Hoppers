@@ -143,6 +143,10 @@ public class AstroConfig implements Configuration{
 
     /**
      * Generates all possible moves for a piece at a given position.
+     * @param row row
+     * @param col col
+     * @param piece robot/astro
+     * @return list of moves
      */
     private List<Configuration> generateMoves(int row, int col, String piece) {
         List<Configuration> moves = new ArrayList<>();
@@ -170,6 +174,9 @@ public class AstroConfig implements Configuration{
 
     /**
      * Checks if a cell is within bounds and not occupied by another piece.
+     * @param newRow rol
+     * @param newCol col
+     * @return whether cell can move or not
      */
     private boolean canMove(int newRow, int newCol) {
         return newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol].equals(".");
