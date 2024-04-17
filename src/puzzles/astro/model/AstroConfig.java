@@ -86,6 +86,34 @@ public class AstroConfig implements Configuration{
     }
 
     /**
+     * AstroConfig constructor
+     *
+     * @param other other AstroConfig
+     */
+    public AstroConfig(AstroConfig other) {
+        this.rows = other.rows;
+        this.cols = other.cols;
+        this.grid = copyGrid(other.grid);
+        this.astroCoords = other.astroCoords;
+        this.goalCoords = other.goalCoords;
+        this.neighbors = new HashSet<>();
+    }
+
+    /**
+     * Copies other grid
+     *
+     * @param original original grid
+     * @return copied grid
+     */
+    private String[][] copyGrid(String[][] original) {
+        String[][] newGrid = new String[original.length][original[0].length];
+        for (int i = 0; i < original.length; i++) {
+            System.arraycopy(original[i], 0, newGrid[i], 0, original[i].length);
+        }
+        return newGrid;
+    }
+
+    /**
      * Checks if the current config is a solution to Astro puzzle
      *
      * @return true if the config is solution, false otherwise.
