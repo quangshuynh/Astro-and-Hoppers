@@ -23,17 +23,16 @@ public class Astro {
         System.out.println("File: data/astro/" + fileName);
         AstroConfig astroConfig = new AstroConfig(fileName);
         System.out.println(astroConfig);
-        System.out.println("TEST");
-//        Solver solver = new Solver();
-//        List<Configuration> solution = solver.solve(astroConfig);
-//        System.out.println("Total configs: " + solver.getTotalConfigs());
-//        System.out.println("Unique configs: " + solver.getUniqueConfigs());
-//        if(solution != null && !solution.isEmpty()) {  // print steps
-//            for(int stepNum = 0; stepNum < solution.size(); stepNum++) {
-//                System.out.println("Step " + stepNum + ": " + solution.get(stepNum));
-//            }
-//        } else {
-//            System.out.println("No solution");
-//        }
+        Solver solver = new Solver();
+        List<Configuration> solution = solver.solve(astroConfig);
+        System.out.println("Total configs: " + solver.getTotalConfigs());
+        System.out.println("Unique configs: " + solver.getUniqueConfigs());
+        if(solution != null && !solution.isEmpty()) {  // print steps
+            for(int stepNum = 0; stepNum < solution.size(); stepNum++) {
+                System.out.println("Step " + stepNum + ": " + solution.get(stepNum));
+            }
+        } else {
+            System.out.println("No solution");
+        }
     }
 }
