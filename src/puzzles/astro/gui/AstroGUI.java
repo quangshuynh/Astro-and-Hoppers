@@ -1,6 +1,9 @@
 package puzzles.astro.gui;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -38,12 +41,59 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     @Override
     public void start(Stage stage) throws Exception {
-        Button button = new Button();
-        button.setGraphic(new ImageView(robot));
-        button.setBackground(background);
-        button.setMinSize(ICON_SIZE, ICON_SIZE);
-        button.setMaxSize(ICON_SIZE, ICON_SIZE);
-        Scene scene = new Scene(button);
+        BorderPane main = new BorderPane(); // main borderpane for everything
+        GridPane game = new GridPane();  // game grid
+        game.setPadding(new Insets(10, 10, 10, 10));  // set padding
+        game.setVgap(1);  // vertical gap inbetween tiles
+        game.setHgap(1);  // horizontal gap inbetween tiles
+
+        /** Game Grid */
+        for(int row = 0; row < 5; row++) {  // 5 rows (change to getRow later)
+            for(int col = 0; col < 5; col++) {  // 5 columns (change to getCol later)
+                Label tile = new Label("");
+                tile.setMinSize(ICON_SIZE, ICON_SIZE);
+                tile.setAlignment(Pos.CENTER);
+                tile.setBackground(background);;
+                GridPane.setRowIndex(tile, row);
+                GridPane.setColumnIndex(tile, col);
+                game.getChildren().add(tile);
+            }
+        }
+
+        /** Direction Buttons */
+        GridPane buttonsGrid = new GridPane();
+        buttonsGrid.setAlignment(Pos.CENTER);
+        Button north = new Button("N");
+        Button south = new Button("S");
+        Button east = new Button("E");
+        Button west = new Button("W");
+        buttonsGrid.add(north, 1, 0);
+        buttonsGrid.add(south, 1, 2);
+        buttonsGrid.add(east, 2, 1);
+        buttonsGrid.add(west, 0, 1);
+        VBox arrows = new VBox();
+        arrows.setAlignment(Pos.CENTER);
+        arrows.getChildren().addAll(buttonsGrid);
+        buttonsGrid.setPadding(new Insets(0, 7, 0, 0));
+
+        /** FlowPane Buttons */
+        FlowPane fp = new FlowPane();
+        fp.setPadding(new Insets(2, 0, 5, 0));
+        fp.setAlignment(Pos.CENTER);
+        String[] buttonLabels = {"Load", "Reset", "Hint"};
+        for (String label : buttonLabels) {
+            Button button = new Button(label);
+            button.setStyle("-fx-font-size:18");
+            fp.getChildren().add(button);
+        }
+
+        /** Main adding */
+        main.setCenter(game);
+        main.setRight(buttonsGrid);
+        main.setBottom(fp);
+
+        /** Scene */
+        Scene scene = new Scene(main);
         stage.setScene(scene);
         stage.setTitle("AstroGUI");
         stage.show();
