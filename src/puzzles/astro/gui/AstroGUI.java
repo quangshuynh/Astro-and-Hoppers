@@ -77,9 +77,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         buttonsGrid.add(south, 1, 2);
         buttonsGrid.add(east, 2, 1);
         buttonsGrid.add(west, 0, 1);
-        VBox arrows = new VBox();
-        arrows.setAlignment(Pos.CENTER);
-        arrows.getChildren().addAll(buttonsGrid);
+        VBox directions = new VBox();
+        directions.setAlignment(Pos.CENTER);
+        directions.getChildren().addAll(buttonsGrid);
         buttonsGrid.setPadding(new Insets(0, 7, 0, 0));
 
         /** FlowPane Buttons (bottom) */
