@@ -93,7 +93,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
             fp.getChildren().add(button);
         }
 
-        /** Loaded: ? (top) */
+        /** Status (top) */
         HBox top = new HBox();
         status = new Label("Loaded: " + filename); // filename
         status.setStyle("-fx-font-size:15");
