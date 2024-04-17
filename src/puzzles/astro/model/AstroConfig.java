@@ -1,11 +1,14 @@
 package puzzles.astro.model;
 
+import puzzles.astro.solver.Astro;
 import puzzles.astro.solver.Robot;
 import puzzles.common.solver.Configuration;
+import puzzles.dice.DiceConfig;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -23,6 +26,7 @@ public class AstroConfig implements Configuration{
     private String goalCoords;
     private int rows;
     private int cols;
+    private Collection<Configuration> neighbors;
     /**
      * Construct new AstroConfig
      *
@@ -31,12 +35,13 @@ public class AstroConfig implements Configuration{
      */
     public AstroConfig(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            neighbors = new HashSet<>();
             /** Read dimension info */
             String line = br.readLine();
             String dim[] = line.split("\\s+");
             rows = Integer.parseInt(dim[0]);  // first line, first int is row
             cols = Integer.parseInt(dim[1]); // first line, second int is col
-            grid = new String[rows][cols];  // Initialize grid array with the specified dimensions
+            grid = new String[rows][cols];  // initialize grid array with specified dimensions
 
             /** Read goal info */
             line = br.readLine();
@@ -108,7 +113,13 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public boolean equals(Object other) {
-        return false;
+        boolean result = false;
+        if(other instanceof AstroConfig) {
+            AstroConfig otherAstro = (AstroConfig) other;
+            result = Objects.equals(astroCoords, otherAstro.astroCoords)
+                    && Objects.equals(goalCoords, ((AstroConfig) other).goalCoords);
+        }
+        return result;
     }
 
     /**
@@ -117,7 +128,9 @@ public class AstroConfig implements Configuration{
      * @return The hash code of the clock config
      */
     @Override
-    public int hashCode() { return 0; }
+    public int hashCode() {
+        return Objects.hash(Arrays.deepHashCode(grid), astroCoords, goalCoords);
+    }
 
     /**
      * Prints Astro grid
