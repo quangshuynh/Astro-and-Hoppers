@@ -43,13 +43,16 @@ public class AstroConfig implements Configuration{
             String[] goalLine = line.split("\\s+");
             int goalRow = Integer.parseInt(goalLine[1].split(",")[0]);
             int goalColumn = Integer.parseInt(goalLine[1].split(",")[1]);
+            grid[goalRow][goalColumn] = "*";
             goalCoords = goalRow + "," + goalColumn;
+
 
             /** Read astronaut info */
             line = br.readLine();
             String[] astroLine = line.split("\\s+");
             int astroRow = Integer.parseInt(astroLine[1].split(",")[0]);
             int astroColumn = Integer.parseInt(astroLine[1].split(",")[1]);
+            grid[astroRow][astroColumn] = "A";
             astroCoords = astroRow + "," + astroColumn;
 
             /** Read number of robots and robot info */
@@ -63,14 +66,15 @@ public class AstroConfig implements Configuration{
                 int robotRow = Integer.parseInt(robotInfo[1].split(",")[0]);
                 int robotColumn = Integer.parseInt(robotInfo[1].split(",")[1]);
                 robots.add(new Robot(robotSymbol, robotRow, robotColumn));
+                grid[robotRow][robotColumn] = String.valueOf(robotSymbol);
             }
 
-            /** Assign Grid */
+            /** Assign Grid with remaining cells*/
             for(int row = 0; row < rows; row++) {
-                line = br.readLine();  // read the next line of the grid
-                String[] rowValues = line.split("\\s+");
                 for(int col = 0; col < cols; col++) {
-                    grid[row][col] = rowValues[col];
+                    if(grid[row][col] == null) {
+                        grid[row][col] = ".";
+                    }
                 }
             }
         }
@@ -122,6 +126,13 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public String toString() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                sb.append(grid[row][col]).append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }
