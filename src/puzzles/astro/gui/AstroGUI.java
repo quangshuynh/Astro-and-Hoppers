@@ -114,7 +114,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     }
 
     /**
-     * Called by the model, model.AstroModdel, whenever there is a state change
+     * Called by the model, model.AstroModel, whenever there is a state change
      * that needs to be updated by the GUI.
      *
      * @param astroModel the AstroModel

@@ -1,9 +1,13 @@
 package puzzles.astro.model;
 
+import puzzles.astro.solver.Robot;
 import puzzles.common.solver.Configuration;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Represents a configuration for solving Astro puzzles
@@ -20,6 +24,40 @@ public class AstroConfig implements Configuration{
      * @throws IOException
      */
     public AstroConfig(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            /** Read dimension info */
+            String line = br.readLine();
+            String dim[] = line.split("\\s+");
+            int rows = Integer.parseInt(dim[0]);  // first line, first int is row
+            int columns = Integer.parseInt(dim[1]); // first line, second int is col
+
+            /** Read goal info */
+            line = br.readLine();
+            String[] goalLine = line.split("\\s+");
+            int goalRow = Integer.parseInt(goalLine[1].split(",")[0]);
+            int goalColumn = Integer.parseInt(goalLine[1].split(",")[1]);
+            String goalCoords = goalRow + "," + goalColumn;
+
+            /** Read astronaut info */
+            line = br.readLine();
+            String[] astroLine = line.split("\\s+");
+            int astroRow = Integer.parseInt(astroLine[1].split(",")[0]);
+            int astroColumn = Integer.parseInt(astroLine[1].split(",")[1]);
+            String astroCoords = astroRow + "," + astroColumn;
+
+            /** Read number of robots and robot info */
+            line = br.readLine();
+            int numRobots = Integer.parseInt(line);
+            Collection<Robot> robots = new HashSet<>();
+            for (int i = 0; i < numRobots; i++) {
+                line = br.readLine();
+                String[] robotInfo = line.split("\\s+");
+                char robotSymbol = robotInfo[0].charAt(0);
+                int robotRow = Integer.parseInt(robotInfo[1].split(",")[0]);
+                int robotColumn = Integer.parseInt(robotInfo[1].split(",")[1]);
+                robots.add(new Robot(robotSymbol, robotRow, robotColumn));
+            }
+        }
     }
 
     /**
