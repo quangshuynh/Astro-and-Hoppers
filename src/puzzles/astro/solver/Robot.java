@@ -88,7 +88,7 @@ public class Robot implements Comparable<Robot> {
      */
     @Override
     public String toString() {
-        return this.symbol + String.valueOf(row) + col;
+        return this.symbol + String.valueOf(row) + String.valueOf(col);
     }
 
     /**

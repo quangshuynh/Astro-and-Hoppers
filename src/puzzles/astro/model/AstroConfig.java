@@ -20,8 +20,8 @@ public class AstroConfig implements Configuration{
     private String[][] grid;
     private String astroCoords;
     private String goalCoords;
-    private int rows;
-    private int cols;
+    private static int rows;
+    private static int cols;
     private Collection<Configuration> neighbors;
     /**
      * Construct new AstroConfig
@@ -44,7 +44,7 @@ public class AstroConfig implements Configuration{
             String[] goalLine = line.split("\\s+");
             int goalRow = Integer.parseInt(goalLine[1].split(",")[0]);
             int goalColumn = Integer.parseInt(goalLine[1].split(",")[1]);
-            grid[goalRow][goalColumn] = "*";
+            grid[goalRow][goalColumn] = goalLine[0];
             goalCoords = goalRow + "," + goalColumn;
 
 
@@ -53,14 +53,14 @@ public class AstroConfig implements Configuration{
             String[] astroLine = line.split("\\s+");
             int astroRow = Integer.parseInt(astroLine[1].split(",")[0]);
             int astroColumn = Integer.parseInt(astroLine[1].split(",")[1]);
-            grid[astroRow][astroColumn] = "A";
+            grid[astroRow][astroColumn] = astroLine[0];
             astroCoords = astroRow + "," + astroColumn;
 
             /** Read number of robots and robot info */
             line = br.readLine();
             int numRobots = Integer.parseInt(line);
             Collection<Robot> robots = new HashSet<>();
-            for (int i = 0; i < numRobots; i++) {
+            for(int i = 0; i < numRobots; i++) {
                 line = br.readLine();
                 String[] robotInfo = line.split("\\s+");
                 char robotSymbol = robotInfo[0].charAt(0);
@@ -126,60 +126,7 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public Collection<Configuration> getNeighbors() {
-        List<Configuration> neighbors = new ArrayList<>();
-        int[] astroPosition = Arrays.stream(astroCoords.split(",")).mapToInt(Integer::parseInt).toArray();
-        int astroRow = astroPosition[0];
-        int astroCol = astroPosition[1];
-        neighbors.addAll(generateMoves(astroRow, astroCol, "A"));
-        for(int row = 0; row < rows; row++) {
-            for(int col = 0; col < cols; col++) {
-                if(grid[row][col].matches("[A-Z]") && !grid[row][col].equals("A")) { // robots
-                    neighbors.addAll(generateMoves(row, col, grid[row][col]));
-                }
-            }
-        }
-        return neighbors;
-    }
-
-    /**
-     * Generates all possible moves for a piece at a given position.
-     * @param row row
-     * @param col col
-     * @param piece robot/astro
-     * @return list of moves
-     */
-    private List<Configuration> generateMoves(int row, int col, String piece) {
-        List<Configuration> moves = new ArrayList<>();
-        int[] rowOffsets = {-1, 1, 0, 0};
-        int[] colOffsets = {0, 0, -1, 1};
-        for(int i = 0; i < rowOffsets.length; i++) {
-            int newRow = row;
-            int newCol = col;
-            while(canMove(newRow + rowOffsets[i], newCol + colOffsets[i])) {
-                newRow += rowOffsets[i];
-                newCol += colOffsets[i];
-            }
-            if(newRow != row || newCol != col) {
-                AstroConfig newConfig = new AstroConfig(this);
-                newConfig.grid[row][col] = ".";
-                newConfig.grid[newRow][newCol] = piece;
-                if(piece.equals("A")) {
-                    newConfig.astroCoords = newRow + "," + newCol;
-                }
-                moves.add(newConfig);
-            }
-        }
-        return moves;
-    }
-
-    /**
-     * Checks if a cell is within bounds and not occupied by another piece.
-     * @param newRow rol
-     * @param newCol col
-     * @return whether cell can move or not
-     */
-    private boolean canMove(int newRow, int newCol) {
-        return newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol].equals(".");
+        return null;
     }
 
     /**
