@@ -24,6 +24,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     private String filename;  // file name of astro
     private Label status;  // game status
     private GridPane game;  // gridpane of game
+    private Label selectedLabel; // selected box
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
@@ -76,7 +77,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
                 tile.setBackground(background);
-               // tile.setGraphic(new ImageView(earth));
+                tile.setOnMouseClicked(e -> select(tile));
                 GridPane.setRowIndex(tile, row);
                 GridPane.setColumnIndex(tile, col);
                 game.getChildren().add(tile);
@@ -171,6 +172,19 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
             }
             status.setText(msg);
         }
+    }
+
+    /**
+     * Selecting a tile from game
+     *
+     * @param clicked selected box that is clicked
+     */
+    private void select(Label clicked) {
+        if(selectedLabel != null) {
+            selectedLabel.setStyle("");
+        }
+        selectedLabel = clicked;
+        clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
     }
 
     /**
