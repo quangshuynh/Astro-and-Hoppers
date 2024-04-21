@@ -15,6 +15,7 @@ import puzzles.hoppers.model.HoppersModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
@@ -42,9 +43,10 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     /**
      * Initialize AstroModel with getting filename and add observer
      */
-    public void init() {
+    public void init() throws IOException {
         filename = getParameters().getRaw().get(0);
-        //model.addObserver(this);
+        model = new AstroModel(filename);
+        model.addObserver(this);
     }
 
     /**
@@ -61,8 +63,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         game.setPadding(new Insets(10, 10, 10, 10));  // set padding
         game.setVgap(1);  // vertical gap inbetween tiles
         game.setHgap(1);  // horizontal gap inbetween tiles
-        for(int row = 0; row < model.getRow(); row++) {  // 5 rows (change to getRow later)
-            for(int col = 0; col < model.getCol(); col++) {  // 5 columns (change to getCol later)
+        for(int row = 0; row < model.getRow(); row++) {
+            for(int col = 0; col < model.getCol(); col++) {
                 Label tile = new Label("");
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
