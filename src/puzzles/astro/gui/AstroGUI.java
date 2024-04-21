@@ -1,6 +1,7 @@
 package puzzles.astro.gui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,26 +15,36 @@ import puzzles.hoppers.model.HoppersModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
     private AstroModel model;
     private String filename;
     private Label status;
+    private GridPane game;
+    private Observer observer;
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
     // for demonstration purposes
-    private Image robot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
+    /** Robots */
+    private Image blueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
+    private Image greenRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-green.png"));
+    private Image lightblueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-lightblue.png"));
+
     private BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/space.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
     private Background background = new Background(backgroundImage);
 
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
 
+
     /**
      * Initialize AstroModel with getting filename and add observer
      */
     public void init() {
         filename = getParameters().getRaw().get(0);
+        //model.addObserver(this);
     }
 
     /**
@@ -46,12 +57,12 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         BorderPane main = new BorderPane(); // main borderpane for everything
 
         /** Game Grid (center) */
-        GridPane game = new GridPane();  // game grid
+        game = new GridPane();  // game grid
         game.setPadding(new Insets(10, 10, 10, 10));  // set padding
         game.setVgap(1);  // vertical gap inbetween tiles
         game.setHgap(1);  // horizontal gap inbetween tiles
-        for(int row = 0; row < 5; row++) {  // 5 rows (change to getRow later)
-            for(int col = 0; col < 5; col++) {  // 5 columns (change to getCol later)
+        for(int row = 0; row < model.getRow(); row++) {  // 5 rows (change to getRow later)
+            for(int col = 0; col < model.getCol(); col++) {  // 5 columns (change to getCol later)
                 Label tile = new Label("");
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
@@ -122,7 +133,16 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     @Override
     public void update(AstroModel astroModel, String msg) {
-        // todo
+//        for(Node child : game.getChildren()) {
+//            if(child instanceof Label label) {
+//                int row = GridPane.getRowIndex(label);
+//                int col = GridPane.getColumnIndex(label);
+//                String value = astroModel.getContent(row, col);
+//                if(Objects.equals(value, "B")) {
+//                    label.setGraphic(new ImageView(blueRobot));
+//                }
+//            }
+    //}
     }
 
     /**

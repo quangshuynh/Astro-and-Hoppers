@@ -13,6 +13,7 @@ import java.util.List;
  * @author Quang Huynh (qth9368)
  */
 public class AstroModel {
+    private String filename;
     /** the collection of observers of this model */
     private final List<Observer<AstroModel, String>> observers = new LinkedList<>();
 
@@ -43,5 +44,45 @@ public class AstroModel {
      * @param filename name of Astro puzzle
      */
     public AstroModel(String filename) throws IOException {
+        this.filename = filename;
+        currentConfig = new AstroConfig(this.filename);
+    }
+
+    /**
+     * Get rows
+     *
+     * @return rows of grid
+     */
+    public int getRow() {
+        return currentConfig.rows;
+    }
+
+    /**
+     * Get columns
+     *
+     * @return columns of grid
+     */
+    public int getCol() {
+        return currentConfig.cols;
+    }
+
+    /**
+     * returns current config
+     *
+     * @return current config
+     */
+    public AstroConfig getCurrentConfig() {
+        return currentConfig;
+    }
+
+    /**
+     * Get content of row and column of a cell
+     *
+     * @param row row index
+     * @param col col index
+     * @return the cell value
+     */
+    public String getContent(int row, int col) {
+        return currentConfig.getGrid()[row][col];
     }
 }

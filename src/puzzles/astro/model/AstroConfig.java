@@ -20,8 +20,8 @@ public class AstroConfig implements Configuration{
     private String[][] grid;
     private String astroCoords;
     private String goalCoords;
-    private static int rows;
-    private static int cols;
+    protected int rows;
+    protected int cols;
     private Collection<Configuration> neighbors;
     /**
      * Construct new AstroConfig
@@ -173,5 +173,9 @@ public class AstroConfig implements Configuration{
             }
         }
         return sb.toString();
+    }
+
+    public String[][] getGrid() {
+        return grid;
     }
 }
