@@ -2,12 +2,16 @@ package puzzles.astro.model;
 
 import puzzles.astro.solver.Astro;
 import puzzles.astro.solver.Robot;
+import puzzles.common.Coordinates;
+import puzzles.common.Direction;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+
+import static puzzles.common.Direction.*;
 
 /**
  * Represents a configuration for solving Astro puzzles
@@ -18,8 +22,8 @@ import java.util.*;
 
 public class AstroConfig implements Configuration{
     private String[][] grid;
-    private String astroCoords;
-    private String goalCoords;
+    private Coordinates astroCoords;
+    private Coordinates goalCoords;
     public int rows;
     public int cols;
     private Collection<Configuration> neighbors;
@@ -45,8 +49,7 @@ public class AstroConfig implements Configuration{
             int goalRow = Integer.parseInt(goalLine[1].split(",")[0]);
             int goalColumn = Integer.parseInt(goalLine[1].split(",")[1]);
             grid[goalRow][goalColumn] = goalLine[0];
-            goalCoords = goalRow + "," + goalColumn;
-
+            goalCoords = new Coordinates(goalRow, goalColumn);
 
             /** Read astronaut info */
             line = br.readLine();
@@ -54,7 +57,7 @@ public class AstroConfig implements Configuration{
             int astroRow = Integer.parseInt(astroLine[1].split(",")[0]);
             int astroColumn = Integer.parseInt(astroLine[1].split(",")[1]);
             grid[astroRow][astroColumn] = astroLine[0];
-            astroCoords = astroRow + "," + astroColumn;
+            astroCoords = new Coordinates(astroRow, astroColumn);
 
             /** Read number of robots and robot info */
             line = br.readLine();
@@ -77,6 +80,45 @@ public class AstroConfig implements Configuration{
                         grid[row][col] = ".";
                     }
                 }
+            }
+
+            /** Process neighbor info */
+            for(int row = 0; row < rows; row++) {  // read and process neighbor info for each cell
+                line = br.readLine();
+                String[] neighborInfo = line.split("\\s+");
+                for(int col = 0; col < cols; col++) {
+                    processNeighbors(row, col, neighborInfo[col]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add neighbors to each cell
+     *
+     * @param row row index
+     * @param col column index
+     * @param directions cardinal direction (N, S, E, W)
+     */
+    private void processNeighbors(int row, int col, Direction directions) {
+        if(directions.equals(NORTH)) {  // north
+            if(row > 0) {
+                neighbors.add(grid[row - 1][col]);
+            }
+        }
+        if(directions.equals(SOUTH)) {  // south
+            if(row < rows - 1) {
+                neighbors.add(grid[row + 1][col]);
+            }
+        }
+        if(directions.equals(EAST)) {  // east
+            if(col < cols - 1) {
+                neighbors.add(grid[row][col + 1]);
+            }
+        }
+        if(directions.equals(WEST)) {  // west
+            if(col > 0) {
+               neighbors.add(grid[row][col - 1]);
             }
         }
     }

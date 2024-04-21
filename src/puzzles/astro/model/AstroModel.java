@@ -127,12 +127,12 @@ public class AstroModel {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ");
+        sb.append("   ");
         /** columns */
         for(int col = 0; col < getCol(); col++) {
             sb.append(col + " ");
         }
-        sb.append("\n" + " ");
+        sb.append("\n" + "  ");
         for(int col = 0; col < getCol(); col++) {
             sb.append("--");
         }
@@ -140,7 +140,7 @@ public class AstroModel {
 
         /** rows */
         for(int row = 0; row < getRow(); row++) {
-            sb.append(row + "|");
+            sb.append(row + "| ");
             /** display game */
             for(int col = 0; col < getCol(); col++) {
                 sb.append(currentConfig.getGrid()[row][col] + " ");
