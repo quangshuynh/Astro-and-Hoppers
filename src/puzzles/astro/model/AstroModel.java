@@ -1,12 +1,17 @@
 package puzzles.astro.model;
 
+import puzzles.common.Coordinates;
+import puzzles.common.Direction;
 import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
+import puzzles.common.solver.Move;
 import puzzles.common.solver.Solver;
+import puzzles.common.Direction.*;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The model for the Astro puzzle
@@ -15,6 +20,9 @@ import java.util.List;
  * @author Quang Huynh (qth9368)
  */
 public class AstroModel {
+    private String EARTH_SYMBOL = "*";
+    public String EMPTY_SYMBOL = ".";
+    public String ASTRONAUT_SYMBOL = "A";
     private String filename;
     /** the collection of observers of this model */
     private final List<Observer<AstroModel, String>> observers = new LinkedList<>();
@@ -116,20 +124,165 @@ public class AstroModel {
     /**
      * Get content of row and column of a cell
      *
-     * @param row row index
-     * @param col col index
+     * @param coord coordinates (row, col)
      * @return the cell value
      */
-    public String getContent(int row, int col) {
+    public String getContent(Coordinates coord) {
+        int row = coord.row();
+        int col = coord.col();
         return currentConfig.getGrid()[row][col];
+    }
+
+    /**
+     * Make move
+     *
+     * @param move where to make move (coordinates & direction)
+     */
+    public void makeMove(Move move){
+        Coordinates coord = move.getCoordinates();
+        Direction dir = move.getDirection();
+        int row = getRow();
+        int col = getCol();
+        int i = 1;
+        String symbol = ".";  // empty
+        boolean blocked = false;
+        //gameState to later
+        try {
+            if(currentConfig.getGrid()[row][col].equals(EMPTY_SYMBOL)) {
+                System.out.println("Given position is invalid");
+                blocked = true;
+            }
+            else {
+                symbol = currentConfig.grid[row][col];
+            }
+        }
+        catch(IndexOutOfBoundsException ibe) {
+            System.out.println("Given position is invalid");
+            blocked = true;
+        }
+        if(dir == Direction.EAST) {
+            while(!blocked) {
+                try {
+                    if(currentConfig.grid[row][col + i].equals(EMPTY_SYMBOL)) {
+                        i++;
+                    } else if(!Objects.equals(currentConfig.grid[row][col + i], EMPTY_SYMBOL)) {
+                        blocked = true;
+                        currentConfig.grid[row][col] = EMPTY_SYMBOL;
+                        if(!Objects.equals(currentConfig.grid[row][col + i], EARTH_SYMBOL)) {
+                            currentConfig.grid[row][col + i - 1] = symbol;
+                             coord = new Coordinates(row, (col + i - 1));
+                            // maybe increment move count?
+                        } else if(currentConfig.grid[row][col + i].equals(EARTH_SYMBOL)) {
+                            //gameState won
+                            //System.out.println("You have won!");
+                            blocked = true;
+                            currentConfig.grid[row][col + i] = symbol;
+                            // maybe increment move count?
+                        }
+                        i = 1;
+                    }
+                } catch(IndexOutOfBoundsException ibe) {
+                    i = 1;
+                    System.out.println("Fell off!");
+                    blocked = true;
+                }
+            }
+            blocked = false;
+        }
+        if(dir == Direction.WEST) {
+            while(!blocked) {
+                try {
+                    if(currentConfig.grid[row][col - i].equals(EMPTY_SYMBOL)) {
+                        blocked = false;
+                        i++;
+                    } else if(!Objects.equals(currentConfig.grid[row][col - i], EMPTY_SYMBOL)) {
+                        blocked = true;
+                        currentConfig.grid[row][col] = EMPTY_SYMBOL;
+                        if(!Objects.equals(currentConfig.grid[row][col - i], EARTH_SYMBOL)) {
+                            currentConfig.grid[row][col - i + 1] = symbol;
+                            coord = new Coordinates(row, (col - i + 1));
+                            // maybe increment move count?
+                        } else if(currentConfig.grid[row][col - i].equals(EARTH_SYMBOL)) {
+                            //game state won
+                           // System.out.println("You have won!");
+                            blocked = true;
+                            currentConfig.grid[row][col - i] = symbol;
+                        }
+                        i = 1;
+                    }
+                } catch(IndexOutOfBoundsException ibe) {
+                    i = 1;
+                    System.out.println("Fell off!");
+                    blocked = true;
+                }
+            }
+            blocked = false;
+        }
+        if(dir == Direction.SOUTH) {
+            while(!blocked){
+                try {
+                    if(Objects.equals(currentConfig.grid[row + i][col], EMPTY_SYMBOL)) {
+                        i++;
+                    } else if(!currentConfig.grid[row + i][col].equals(EMPTY_SYMBOL)) {
+                        blocked = true;
+                        currentConfig.grid[row][col] = EMPTY_SYMBOL;
+                        if(!Objects.equals(currentConfig.grid[row + i][col], EARTH_SYMBOL)) {
+                            //notify observer
+                            currentConfig.grid[row + i + 1][col] = symbol;
+                            coord = new Coordinates((row + i + 1), col);
+                            // maybe increment move count?
+                        } else if(currentConfig.grid[row + i][col].equals(EARTH_SYMBOL)) {
+                            //game statsu won
+                           // System.out.println("You have won!");
+                            blocked = true;
+                            currentConfig.grid[row + i][col] = symbol;
+                        }
+                        i = 1;
+                    }
+                } catch(IndexOutOfBoundsException ibe) {
+                    i = 1;
+                    System.out.println("You fell off!");
+                    blocked = true;
+                }
+            }
+            blocked = false;
+        }
+        if(dir == Direction.NORTH){
+            while(!blocked){
+                try {
+                    if(currentConfig.grid[row - i][col].equals(EMPTY_SYMBOL)) {
+                        i++;
+                    } else if(!Objects.equals(currentConfig.grid[row - i][col], EMPTY_SYMBOL)) {
+                        blocked = true;
+                        currentConfig.grid[row][col] = EMPTY_SYMBOL;
+                        if(!Objects.equals(currentConfig.grid[row - i][col], EARTH_SYMBOL)) {
+                            //notify observer
+                            currentConfig.grid[row - i + 1][col] = symbol;
+                            coord = new Coordinates((row - i + 1), col);
+                            // maybe increment move count?
+                        } else if(currentConfig.grid[row - i][col].equals(EARTH_SYMBOL)) {
+                            //gameState won
+                            //System.out.println("You have won!");
+                            blocked = true;
+                            currentConfig.grid[row - i][col] = symbol;
+                        }
+                        i = 1;
+                    }
+                } catch(IndexOutOfBoundsException ibe) {
+                    i = 1;
+                    System.out.println("Fell off!");
+                    blocked = true;
+                }
+            }
+            blocked = false;
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("   ");
-        /** columns */
-        for(int col = 0; col < getCol(); col++) {
+        for(int col = 0; col < getCol(); col++) {  // columns
             sb.append(col + " ");
         }
         sb.append("\n" + "  ");
@@ -137,12 +290,9 @@ public class AstroModel {
             sb.append("--");
         }
         sb.append("\n");
-
-        /** rows */
-        for(int row = 0; row < getRow(); row++) {
+        for(int row = 0; row < getRow(); row++) {  // rows
             sb.append(row + "| ");
-            /** display game */
-            for(int col = 0; col < getCol(); col++) {
+            for(int col = 0; col < getCol(); col++) {  // display grid
                 sb.append(currentConfig.getGrid()[row][col] + " ");
             }
             sb.append("\n");

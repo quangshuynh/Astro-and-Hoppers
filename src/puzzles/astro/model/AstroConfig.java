@@ -21,7 +21,7 @@ import static puzzles.common.Direction.*;
  */
 
 public class AstroConfig implements Configuration{
-    private String[][] grid;
+    public String[][] grid;
     private Coordinates astroCoords;
     private Coordinates goalCoords;
     public int rows;
@@ -85,9 +85,9 @@ public class AstroConfig implements Configuration{
             /** Process neighbor info */
             for(int row = 0; row < rows; row++) {  // read and process neighbor info for each cell
                 line = br.readLine();
-                String[] neighborInfo = line.split("\\s+");
+                //String[] neighborInfo = line.split("\\s+");
                 for(int col = 0; col < cols; col++) {
-                    processNeighbors(row, col, neighborInfo[col]);
+                  //  processNeighbors(row, col, neighborInfo[col]);
                 }
             }
         }
@@ -100,28 +100,28 @@ public class AstroConfig implements Configuration{
      * @param col column index
      * @param directions cardinal direction (N, S, E, W)
      */
-    private void processNeighbors(int row, int col, Direction directions) {
-        if(directions.equals(NORTH)) {  // north
-            if(row > 0) {
-                neighbors.add(grid[row - 1][col]);
-            }
-        }
-        if(directions.equals(SOUTH)) {  // south
-            if(row < rows - 1) {
-                neighbors.add(grid[row + 1][col]);
-            }
-        }
-        if(directions.equals(EAST)) {  // east
-            if(col < cols - 1) {
-                neighbors.add(grid[row][col + 1]);
-            }
-        }
-        if(directions.equals(WEST)) {  // west
-            if(col > 0) {
-               neighbors.add(grid[row][col - 1]);
-            }
-        }
-    }
+//    private void processNeighbors(int row, int col, Direction directions) {
+//        if(directions.equals(NORTH)) {  // north
+//            if(row > 0) {
+//                neighbors.add(grid[row - 1][col]);
+//            }
+//        }
+//        if(directions.equals(SOUTH)) {  // south
+//            if(row < rows - 1) {
+//                neighbors.add(grid[row + 1][col]);
+//            }
+//        }
+//        if(directions.equals(EAST)) {  // east
+//            if(col < cols - 1) {
+//                neighbors.add(grid[row][col + 1]);
+//            }
+//        }
+//        if(directions.equals(WEST)) {  // west
+//            if(col > 0) {
+//               neighbors.add(grid[row][col - 1]);
+//            }
+//        }
+//    }
 
     /**
      * AstroConfig constructor

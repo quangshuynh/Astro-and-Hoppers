@@ -1,7 +1,10 @@
 package puzzles.astro.ptui;
 
+import puzzles.common.Coordinates;
+import puzzles.common.Direction;
 import puzzles.common.Observer;
 import puzzles.astro.model.AstroModel;
+import puzzles.common.solver.Move;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -69,12 +72,52 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                     model.resetPuzzle();
                 } else if(words[0].startsWith("l")) {
                     model.loadPuzzle(filename);
+                } else if(words[0].startsWith("m")) {
+                    String[] dir = in.nextLine().split(" ");
+                    move(dir);
                 }
                 else {
                     displayHelp();
                 }
             }
         }
+    }
+
+    /**
+     * Moves selected piece to a location (coordinates, direction)
+     *
+     * @param command command
+     */
+    private void move(String[] command) {
+        if(model == null){
+            System.out.println("No active game. Use new or reset command");
+            return;
+        }
+        if(command.length != 4){
+            System.err.println("Invalid  move");
+            return;
+        }
+        int row = Integer.parseInt(command[1]);
+        int col = Integer.parseInt(command[2]);
+        String dir = command[3];
+
+        Direction direction = Direction.NORTH;
+        if(dir.equals("N")){
+            direction = Direction.NORTH;
+        }else if (dir.equals("S")){
+            direction = Direction.SOUTH;
+        }else if (dir.equals("W")){
+            direction = Direction.WEST;
+        }else if (dir.equals("E")){
+            direction = Direction.EAST;
+        }
+//        if(model.getGameState() == GameState.WON || board.getGameState() == GameState.NO_MOVES){
+//            System.out.println("Game is completed. Reset or start new game");
+//            return;
+//        }
+        Coordinates coords = new Coordinates(row, col);
+        Move move = new Move(coords, direction);
+        model.makeMove(move);
     }
 
     /**

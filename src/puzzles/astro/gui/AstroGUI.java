@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import puzzles.astro.model.AstroModel;
+import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.hoppers.model.HoppersModel;
 
@@ -153,7 +154,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
             if(child instanceof Label label) {
                 int row = GridPane.getRowIndex(label);
                 int col = GridPane.getColumnIndex(label);
-                String value = astroModel.getContent(row, col);
+                Coordinates coordinates = new Coordinates(row, col);
+                String value = astroModel.getContent(coordinates);
                 switch(value) {
                     case "A" -> label.setGraphic(new ImageView(astronaut));
                     case "*" -> label.setGraphic(new ImageView(earthGoal));
