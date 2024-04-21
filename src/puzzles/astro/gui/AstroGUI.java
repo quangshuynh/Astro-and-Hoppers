@@ -19,16 +19,17 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
-    private AstroModel model;
-    private String filename;
-    private Label status;
-    private GridPane game;
-    private Observer observer;
+    private AstroModel model;  // astro model
+    private String filename;  // file name of astro
+    private Label status;  // game status
+    private GridPane game;  // gridpane of game
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
     // for demonstration purposes
-    /** Robots */
+    /** Images */
+    private Image astronaut = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"astro.png"));
+    private Image earth = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"earth.png"));
     private Image blueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
     private Image greenRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-green.png"));
     private Image lightblueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-lightblue.png"));
@@ -44,9 +45,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      * Initialize AstroModel with getting filename and add observer
      */
     public void init() throws IOException {
-        filename = getParameters().getRaw().get(0);
-        model = new AstroModel(filename);
-        model.addObserver(this);
+            filename = getParameters().getRaw().get(0);
+            model = new AstroModel(filename);
+            model.addObserver(this);
     }
 
     /**
@@ -135,16 +136,19 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     @Override
     public void update(AstroModel astroModel, String msg) {
-//        for(Node child : game.getChildren()) {
-//            if(child instanceof Label label) {
-//                int row = GridPane.getRowIndex(label);
-//                int col = GridPane.getColumnIndex(label);
-//                String value = astroModel.getContent(row, col);
-//                if(Objects.equals(value, "B")) {
-//                    label.setGraphic(new ImageView(blueRobot));
-//                }
-//            }
-    //}
+        for(Node child : game.getChildren()) {
+            if(child instanceof Label label) {
+                int row = GridPane.getRowIndex(label);
+                int col = GridPane.getColumnIndex(label);
+                String value = astroModel.getContent(row, col);
+                if(value.equals("A")) {
+                    label.setGraphic(new ImageView(astronaut));
+                } else if(value.equals("*")) {
+                    label.setGraphic(new ImageView(earth));
+                }
+            }
+            status.setText(msg);
+        }
     }
 
     /**
