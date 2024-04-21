@@ -29,10 +29,15 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     // for demonstration purposes
     /** Images */
     private Image astronaut = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"astro.png"));
-    private Image earth = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"earth.png"));
+    private Image earthGoal = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"earth.png"));
     private Image blueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
     private Image greenRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-green.png"));
     private Image lightblueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-lightblue.png"));
+    private Image orangeRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-orange.png"));
+    private Image pinkRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-pink.png"));
+    private Image purpleRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-purple.png"));
+    private Image whiteRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-white.png"));
+    private Image yellowRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-yellow.png"));
 
     private BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/space.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
     private Background background = new Background(backgroundImage);
@@ -69,7 +74,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 Label tile = new Label("");
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
-                tile.setBackground(background);;
+                tile.setBackground(background);
+               // tile.setGraphic(new ImageView(earth));
                 GridPane.setRowIndex(tile, row);
                 GridPane.setColumnIndex(tile, col);
                 game.getChildren().add(tile);
@@ -100,12 +106,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         FlowPane fp = new FlowPane();
         fp.setPadding(new Insets(2, 0, 5, 0));
         fp.setAlignment(Pos.CENTER);
-        String[] buttonLabels = {"Load", "Reset", "Hint"};
-        for(String label : buttonLabels) {
-            Button button = new Button(label);
-            button.setStyle("-fx-font-size:18");
-            fp.getChildren().add(button);
-        }
+        Button load = new Button("Load");
+        Button reset = new Button("Reset");
+        Button hint = new Button("Hint");
+        load.setStyle("-fx-font-size:18");
+        reset.setStyle("-fx-font-size:18");
+        hint.setStyle("-fx-font-size:18");
+        fp.getChildren().addAll(load, reset, hint);
 
         /** Status (top) */
         HBox top = new HBox();
@@ -113,6 +120,12 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         status.setStyle("-fx-font-size:15");
         top.getChildren().add(status);
         top.setAlignment(Pos.CENTER);
+
+        /** SetOnAction */
+        load.setOnAction(e -> model.loadPuzzle(filename));
+        hint.setOnAction(e -> model.getHint());
+        reset.setOnAction(e -> model.resetPuzzle());
+
 
         /** Main adding */
         main.setCenter(game);
@@ -141,10 +154,17 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 int row = GridPane.getRowIndex(label);
                 int col = GridPane.getColumnIndex(label);
                 String value = astroModel.getContent(row, col);
-                if(value.equals("A")) {
-                    label.setGraphic(new ImageView(astronaut));
-                } else if(value.equals("*")) {
-                    label.setGraphic(new ImageView(earth));
+                switch(value) {
+                    case "A" -> label.setGraphic(new ImageView(astronaut));
+                    case "*" -> label.setGraphic(new ImageView(earthGoal));
+                    case "B" -> label.setGraphic(new ImageView(blueRobot));
+                    case "C" -> label.setGraphic(new ImageView(greenRobot));
+                    case "D" -> label.setGraphic(new ImageView(lightblueRobot));
+                    case "E" -> label.setGraphic(new ImageView(orangeRobot));
+                    case "F" -> label.setGraphic(new ImageView(pinkRobot));
+                    case "G" -> label.setGraphic(new ImageView(purpleRobot));
+                    case "H" -> label.setGraphic(new ImageView(whiteRobot));
+                    case "I" -> label.setGraphic(new ImageView(yellowRobot));
                 }
             }
             status.setText(msg);

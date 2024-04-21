@@ -1,6 +1,8 @@
 package puzzles.astro.model;
 
 import puzzles.common.Observer;
+import puzzles.common.solver.Configuration;
+import puzzles.common.solver.Solver;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -73,6 +75,42 @@ public class AstroModel {
      */
     public AstroConfig getCurrentConfig() {
         return currentConfig;
+    }
+
+    /**
+     * Loads a new puzzle configuration from a file.
+     * @param filename The file name to load the puzzle from.
+     */
+    public void loadPuzzle(String filename) {
+        try {
+            this.filename = filename;
+            this.currentConfig = new AstroConfig(filename);
+            notifyObservers("Loaded: " + filename);
+        } catch(IOException e) {
+            notifyObservers("Failed to load puzzle: " + filename);
+        }
+    }
+
+    public void getHint() {
+        try {
+            Solver solver = new Solver();
+            List<Configuration> solution = solver.solve(currentConfig);
+            // todo
+        } catch(Exception e) {
+            notifyObservers("Error getting hint");
+        }
+    }
+
+    /**
+     * Resets the puzzle to the initial configuration based on the current file.
+     */
+    public void resetPuzzle() {
+        try {
+            this.currentConfig = new AstroConfig(this.filename);
+            notifyObservers("Puzzle reset");
+        } catch(IOException e) {
+            notifyObservers("Failed to reset puzzle");
+        }
     }
 
     /**
