@@ -30,7 +30,7 @@ public class AstroConfig implements Configuration{
      * @throws IOException
      */
     public AstroConfig(String filename) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(filename))) {
             neighbors = new HashSet<>();
             /** Read dimension info */
             String line = br.readLine();

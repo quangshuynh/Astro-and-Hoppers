@@ -123,4 +123,30 @@ public class AstroModel {
     public String getContent(int row, int col) {
         return currentConfig.getGrid()[row][col];
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ");
+        /** columns */
+        for(int col = 0; col < getCol(); col++) {
+            sb.append(col + " ");
+        }
+        sb.append("\n" + " ");
+        for(int col = 0; col < getCol(); col++) {
+            sb.append("--");
+        }
+        sb.append("\n");
+
+        /** rows */
+        for(int row = 0; row < getRow(); row++) {
+            sb.append(row + "|");
+            /** display game */
+            for(int col = 0; col < getCol(); col++) {
+                sb.append(currentConfig.getGrid()[row][col] + " ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }

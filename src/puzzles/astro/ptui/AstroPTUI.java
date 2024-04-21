@@ -14,6 +14,7 @@ import java.util.Scanner;
  */
 public class AstroPTUI implements Observer<AstroModel, String> {
     private AstroModel model;
+    private String filename;
 
     /**
      * Create the PTUI
@@ -21,6 +22,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
      * @param filename filename of Astro puzzle
      */
     public void init(String filename) throws IOException {
+        this.filename = filename;
         this.model = new AstroModel(filename);
         this.model.addObserver(this);
         displayHelp();
@@ -36,7 +38,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
     public void update(AstroModel model, String data) {
         // for demonstration purposes
         System.out.println(data);
-        System.out.println(model);
+        System.out.println(model.toString());
     }
 
     /**
@@ -63,6 +65,10 @@ public class AstroPTUI implements Observer<AstroModel, String> {
             if (words.length > 0) {
                 if (words[0].startsWith( "q" )) {
                     break;
+                } else if(words[0].startsWith("r")) {
+                    model.resetPuzzle();
+                } else if(words[0].startsWith("l")) {
+                    model.loadPuzzle(filename);
                 }
                 else {
                     displayHelp();
