@@ -115,9 +115,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
 //            System.out.println("Game is completed. Reset or start new game");
 //            return;
 //        }
-        Coordinates coords = new Coordinates(row, col);
-        Move move = new Move(coords, direction);
-        model.makeMove(move);
+        model.makeMove(direction);
     }
 
     /**

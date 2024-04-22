@@ -134,10 +134,10 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         });
         hint.setOnAction(e -> model.getHint());
         reset.setOnAction(e -> model.resetPuzzle());
-//        north.setOnAction(e -> model.makeMove(new Move(null, Di)));
-//        south.setOnAction(e -> model.makeMove(new Move()));
-//        east.setOnAction(e -> model.makeMove(new Move()));
-//        west.setOnAction(e -> model.makeMove(new Move()));
+        north.setOnAction(e -> model.makeMove(Direction.NORTH));
+        south.setOnAction(e -> model.makeMove(Direction.SOUTH));
+        east.setOnAction(e -> model.makeMove(Direction.EAST));
+        west.setOnAction(e -> model.makeMove(Direction.WEST));
 
 
         /** Main adding */
