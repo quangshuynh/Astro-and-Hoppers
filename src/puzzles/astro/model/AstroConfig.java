@@ -94,36 +94,6 @@ public class AstroConfig implements Configuration{
     }
 
     /**
-     * Add neighbors to each cell
-     *
-     * @param row row index
-     * @param col column index
-     * @param directions cardinal direction (N, S, E, W)
-     */
-//    private void processNeighbors(int row, int col, Direction directions) {
-//        if(directions.equals(NORTH)) {  // north
-//            if(row > 0) {
-//                neighbors.add(grid[row - 1][col]);
-//            }
-//        }
-//        if(directions.equals(SOUTH)) {  // south
-//            if(row < rows - 1) {
-//                neighbors.add(grid[row + 1][col]);
-//            }
-//        }
-//        if(directions.equals(EAST)) {  // east
-//            if(col < cols - 1) {
-//                neighbors.add(grid[row][col + 1]);
-//            }
-//        }
-//        if(directions.equals(WEST)) {  // west
-//            if(col > 0) {
-//               neighbors.add(grid[row][col - 1]);
-//            }
-//        }
-//    }
-
-    /**
      * AstroConfig constructor
      *
      * @param other other AstroConfig
@@ -168,7 +138,61 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public Collection<Configuration> getNeighbors() {
-        return null;
+        this.neighbors = new HashSet<>();
+        for(int row = 0; row < this.rows; row++) {  // identity robots & astronaut
+            for(int col = 0; col < this.cols; col++) {
+                if(grid[row][col].equals(".") || grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
+                    continue;
+                }
+                checkAndAddNeighbor(row, col, NORTH);
+                checkAndAddNeighbor(row, col, SOUTH);
+                checkAndAddNeighbor(row, col, WEST);
+                checkAndAddNeighbor(row, col, EAST);
+            }
+        }
+        return this.neighbors;
+    }
+
+    private void checkAndAddNeighbor(int row, int col, Direction direction) {
+        int deltaRow = 0;
+        int deltaCol = 0;
+        switch(direction) {
+            case NORTH:
+                deltaRow = -1;
+                break;
+            case SOUTH:
+                deltaRow = 1;
+                break;
+            case WEST:
+                deltaCol = -1;
+                break;
+            case EAST:
+                deltaCol = 1;
+                break;
+        }
+        int newRow = row + deltaRow;
+        int newCol = col + deltaCol;
+        while(newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol].equals(".")) {
+            newRow += deltaRow;
+            newCol += deltaCol;
+        }
+        if(newRow != row || newCol != col) {  // only add if the piece has moved
+            AstroConfig newConfig = new AstroConfig(this);
+            newConfig.grid[row][col] = ".";  // set old position to empty cell
+            if(newRow < 0 || newRow >= rows || newCol < 0 || newCol >= cols) {
+                newRow -= deltaRow;
+                newCol -= deltaCol;
+            }
+            newConfig.grid[newRow][newCol] = this.grid[row][col];
+            newConfig.updatePositions(row, col, newRow, newCol);
+            this.neighbors.add(newConfig);
+        }
+    }
+
+    private void updatePositions(int oldRow, int oldCol, int newRow, int newCol) {
+        if(astroCoords.row() == oldRow && astroCoords.col() == oldCol) {
+            this.astroCoords = new Coordinates(newRow, newCol);
+        }
     }
 
     /**
