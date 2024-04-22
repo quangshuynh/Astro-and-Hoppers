@@ -179,23 +179,38 @@ public class AstroConfig implements Configuration{
                 deltaCol = 1;
                 break;
         }
-        int newRow = row + deltaRow;
-        int newCol = col + deltaCol;
-        while(newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol].equals(".")) {
-            newRow += deltaRow;
-            newCol += deltaCol;
+        int nextRow = row + deltaRow, nextCol = col + deltaCol;
+        boolean foundBlockingPiece = false;
+        int lastFreeRow = row, lastFreeCol = col;  // Start at the current position.
+        while (isValidPosition(nextRow, nextCol) && grid[nextRow][nextCol].equals(".")) {
+            lastFreeRow = nextRow;
+            lastFreeCol = nextCol;
+            nextRow += deltaRow;
+            nextCol += deltaCol;
         }
-        if(newRow != row || newCol != col) {  // only add if the piece has moved
+
+        if (isValidPosition(nextRow, nextCol) && !grid[nextRow][nextCol].equals(".")) {
+            foundBlockingPiece = true;
+        }
+        if (foundBlockingPiece && (lastFreeRow != row || lastFreeCol != col)) {
             AstroConfig newConfig = new AstroConfig(this);
-            newConfig.grid[row][col] = ".";  // set old position to empty cell
-            if(newRow < 0 || newRow >= rows || newCol < 0 || newCol >= cols) {
-                newRow -= deltaRow;
-                newCol -= deltaCol;
-            }
-            newConfig.grid[newRow][newCol] = this.grid[row][col];
-            newConfig.updatePositions(row, col, newRow, newCol);
+            newConfig.grid[row][col] = ".";
+            newConfig.grid[lastFreeRow][lastFreeCol] = this.grid[row][col];
+            newConfig.updatePositions(row, col, lastFreeRow, lastFreeCol);
             this.neighbors.add(newConfig);
         }
+    }
+
+
+    /**
+     * Checks if a position is valid
+     *
+     * @param row row index
+     * @param col column index
+     * @return whether a position is valid or not
+     */
+    private boolean isValidPosition(int row, int col) {
+        return(row >= 0) && (row < rows) && (col >= 0) && (col < cols);
     }
 
     /**
