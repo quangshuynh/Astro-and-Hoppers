@@ -140,12 +140,13 @@ public class AstroConfig implements Configuration{
         this.neighbors = new HashSet<>();
         for(int row = 0; row < this.rows; row++) {  // identity robots & astronaut
             for(int col = 0; col < this.cols; col++) {
-                if(!grid[row][col].equals(".") || !grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
-                    checkAndAddNeighbor(row, col, NORTH);  // check movement for all 4 directions
-                    checkAndAddNeighbor(row, col, SOUTH);
-                    checkAndAddNeighbor(row, col, WEST);
-                    checkAndAddNeighbor(row, col, EAST);
+                if(grid[row][col].equals(".") || grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
+                    continue;
                 }
+                checkAndAddNeighbor(row, col, NORTH);  // check movement for all 4 directions
+                checkAndAddNeighbor(row, col, SOUTH);
+                checkAndAddNeighbor(row, col, WEST);
+                checkAndAddNeighbor(row, col, EAST);
             }
         }
         return this.neighbors;
