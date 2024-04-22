@@ -144,7 +144,7 @@ public class AstroConfig implements Configuration{
                 if(grid[row][col].equals(".") || grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
                     continue;
                 }
-                checkAndAddNeighbor(row, col, NORTH);
+                checkAndAddNeighbor(row, col, NORTH);  // check movement for all 4 directions
                 checkAndAddNeighbor(row, col, SOUTH);
                 checkAndAddNeighbor(row, col, WEST);
                 checkAndAddNeighbor(row, col, EAST);
@@ -154,9 +154,10 @@ public class AstroConfig implements Configuration{
     }
 
     /**
-     * Checks if a piece can move and add neighbor
+     * Checks if a piece can move and add neighbor (getNeighbors helper function)
      * A piece can move if there is another piece in the same row/column as selected piece
      * A piece moves towards the other piece until the path is blocked (it passes over the goal)
+     * A piece can only move towards another piece in the same row/column
      *
      * @param row row index
      * @param col column index
@@ -258,6 +259,11 @@ public class AstroConfig implements Configuration{
         return sb.toString();
     }
 
+    /**
+     * Returns matrix
+     *
+     * @return return grid matrix of astro
+     */
     public String[][] getGrid() {
         return grid;
     }
