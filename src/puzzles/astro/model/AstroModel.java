@@ -101,11 +101,16 @@ public class AstroModel {
 
     public void getHint() {
         try {
-            Solver solver = new Solver();
-            List<Configuration> solution = solver.solve(currentConfig);
-            // todo
+            if(!currentConfig.isSolution()) {
+                notifyObservers("Next step!");
+                Solver solver = new Solver();
+                List<Configuration> solution = solver.solve(currentConfig);
+                // todo
+            } else {
+                notifyObservers("Already solved");
+            }
         } catch(Exception e) {
-            notifyObservers("Error getting hint");
+            notifyObservers("No solution!");
         }
     }
 
@@ -115,7 +120,7 @@ public class AstroModel {
     public void resetPuzzle() {
         try {
             this.currentConfig = new AstroConfig(this.filename);
-            notifyObservers("Puzzle reset");
+            notifyObservers("Puzzle reset!");
         } catch(IOException e) {
             notifyObservers("Failed to reset puzzle");
         }
@@ -285,7 +290,14 @@ public class AstroModel {
      * @param col colummn selected
      */
     public void select_status(int row, int col) {
-        notifyObservers("Selected (" + row + ", " + col + ")");
+        String content = getContent(new Coordinates(row, col));
+        if(content.equals("A") || content.equals("B") || content.equals("C") ||
+                content.equals("D") || content.equals("E") || content.equals("F") ||
+                content.equals("G") || content.equals("H") || content.equals("I")) {
+            notifyObservers("Selected (" + row + ", " + col + ")");
+        } else {  // no piece selected
+            notifyObservers("No piece at (" + row + ", " + col + ")");
+        }
     }
 
     @Override
