@@ -284,7 +284,8 @@ public class AstroModel {
     }
 
     /**
-     * updates status to selected tile
+     * Updates status to selected tile
+     * Only can select astronaut or robots
      *
      * @param row row selected
      * @param col colummn selected
