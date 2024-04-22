@@ -35,7 +35,6 @@ public class AstroConfig implements Configuration{
      */
     public AstroConfig(String filename) throws IOException {
         try(BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            neighbors = new HashSet<>();
             /** Read dimension info */
             String line = br.readLine();
             String dim[] = line.split("\\s+");
@@ -141,13 +140,12 @@ public class AstroConfig implements Configuration{
         this.neighbors = new HashSet<>();
         for(int row = 0; row < this.rows; row++) {  // identity robots & astronaut
             for(int col = 0; col < this.cols; col++) {
-                if(grid[row][col].equals(".") || grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
-                    continue;
+                if(!grid[row][col].equals(".") || !grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
+                    checkAndAddNeighbor(row, col, NORTH);  // check movement for all 4 directions
+                    checkAndAddNeighbor(row, col, SOUTH);
+                    checkAndAddNeighbor(row, col, WEST);
+                    checkAndAddNeighbor(row, col, EAST);
                 }
-                checkAndAddNeighbor(row, col, NORTH);  // check movement for all 4 directions
-                checkAndAddNeighbor(row, col, SOUTH);
-                checkAndAddNeighbor(row, col, WEST);
-                checkAndAddNeighbor(row, col, EAST);
             }
         }
         return this.neighbors;
