@@ -251,10 +251,10 @@ public class AstroModel {
                 }
                 blocked = false;
             }
-            if (dir == Direction.NORTH) {
+            if(dir == Direction.NORTH) {
                 while (!blocked) {
                     try {
-                        if (currentConfig.grid[row - i][col].equals(EMPTY_SYMBOL)) {
+                        if(currentConfig.grid[row - i][col].equals(EMPTY_SYMBOL)) {
                             i++;
                         } else if (!Objects.equals(currentConfig.grid[row - i][col], EMPTY_SYMBOL)) {
                             blocked = true;
@@ -304,6 +304,11 @@ public class AstroModel {
         }
     }
 
+    /**
+     * Displays model grid
+     *
+     * @return string representation of astro game grid
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
