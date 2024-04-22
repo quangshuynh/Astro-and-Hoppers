@@ -153,6 +153,15 @@ public class AstroConfig implements Configuration{
         return this.neighbors;
     }
 
+    /**
+     * Checks if a piece can move and add neighbor
+     * A piece can move if there is another piece in the same row/column as selected piece
+     * A piece moves towards the other piece until the path is blocked (it passes over the goal)
+     *
+     * @param row row index
+     * @param col column index
+     * @param direction cardinal direction (n, s, e, w)
+     */
     private void checkAndAddNeighbor(int row, int col, Direction direction) {
         int deltaRow = 0;
         int deltaCol = 0;
@@ -189,6 +198,14 @@ public class AstroConfig implements Configuration{
         }
     }
 
+    /**
+     * Update the positions after moving
+     *
+     * @param oldRow old row index
+     * @param oldCol old column index
+     * @param newRow row index that it is moved to
+     * @param newCol column index that it is moved to
+     */
     private void updatePositions(int oldRow, int oldCol, int newRow, int newCol) {
         if(astroCoords.row() == oldRow && astroCoords.col() == oldCol) {
             this.astroCoords = new Coordinates(newRow, newCol);

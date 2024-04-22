@@ -106,7 +106,7 @@ public class AstroModel {
                 notifyObservers("Next step!");
                 Solver solver = new Solver();
                 List<Configuration> solution = solver.solve(currentConfig);
-                // todo
+                //todo assign coordinate to next solution step and move
             } else {
                 notifyObservers("Already solved");
             }
@@ -141,6 +141,7 @@ public class AstroModel {
 
     /**
      * Make move
+     * Can only make move towards another piece
      *
      * @param dir direction (n, s, e, w)
      */
@@ -281,7 +282,7 @@ public class AstroModel {
                 blocked = false;
             }
         } else {
-            notifyObservers("You must select a piece before you move");
+            notifyObservers("You must select a piece before you move!");
         }
     }
 

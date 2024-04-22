@@ -139,7 +139,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         east.setOnAction(e -> model.makeMove(Direction.EAST));
         west.setOnAction(e -> model.makeMove(Direction.WEST));
 
-
         /** Main adding */
         main.setCenter(game);
         main.setRight(buttonsGrid);
