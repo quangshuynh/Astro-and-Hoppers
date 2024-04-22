@@ -102,14 +102,14 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         String dir = command[3];
 
         Direction direction = Direction.NORTH;
-        if(dir.equals("N")){
+        if(dir.equals("n")){
             direction = Direction.NORTH;
-        }else if (dir.equals("S")){
+        }else if (dir.equals("s")){
             direction = Direction.SOUTH;
-        }else if (dir.equals("W")){
-            direction = Direction.WEST;
-        }else if (dir.equals("E")){
+        }else if (dir.equals("e")){
             direction = Direction.EAST;
+        }else if (dir.equals("w")){
+            direction = Direction.WEST;
         }
 //        if(model.getGameState() == GameState.WON || board.getGameState() == GameState.NO_MOVES){
 //            System.out.println("Game is completed. Reset or start new game");

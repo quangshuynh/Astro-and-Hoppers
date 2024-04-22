@@ -278,6 +278,16 @@ public class AstroModel {
         }
     }
 
+    /**
+     * updates status to selected tile
+     *
+     * @param row row selected
+     * @param col colummn selected
+     */
+    public void select_status(int row, int col) {
+        notifyObservers("Selected (" + row + ", " + col + ")");
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

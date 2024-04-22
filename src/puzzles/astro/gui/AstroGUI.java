@@ -10,7 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
+import puzzles.common.Direction;
 import puzzles.common.Observer;
+import puzzles.common.solver.Move;
 import puzzles.hoppers.model.HoppersModel;
 
 import javafx.application.Application;
@@ -65,6 +67,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     @Override
     public void start(Stage stage) throws Exception {
         BorderPane main = new BorderPane(); // main borderpane for everything
+        status = new Label("");  // initialize status
 
         /** Game Grid (center) */
         game = new GridPane();  // game grid
@@ -77,7 +80,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
                 tile.setBackground(background);
-                tile.setOnMouseClicked(e -> select(tile));
+                int r = row;
+                int c = col;
+                tile.setOnMouseClicked(e -> select(tile, r, c));
                 GridPane.setRowIndex(tile, row);
                 GridPane.setColumnIndex(tile, col);
                 game.getChildren().add(tile);
@@ -118,15 +123,21 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         /** Status (top) */
         HBox top = new HBox();
-        status = new Label("Loaded: " + filename); // filename
         status.setStyle("-fx-font-size:15");
         top.getChildren().add(status);
         top.setAlignment(Pos.CENTER);
 
         /** SetOnAction */
-        load.setOnAction(e -> model.loadPuzzle(filename));
+        load.setOnAction(e -> {
+            model.loadPuzzle(filename);
+            status.setText("Loaded: " + filename);  // load puzzle name
+        });
         hint.setOnAction(e -> model.getHint());
         reset.setOnAction(e -> model.resetPuzzle());
+//        north.setOnAction(e -> model.makeMove(new Move(null, Di)));
+//        south.setOnAction(e -> model.makeMove(new Move()));
+//        east.setOnAction(e -> model.makeMove(new Move()));
+//        west.setOnAction(e -> model.makeMove(new Move()));
 
 
         /** Main adding */
@@ -179,10 +190,11 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      *
      * @param clicked selected box that is clicked
      */
-    private void select(Label clicked) {
+    private void select(Label clicked, int row, int col) {
         if(selectedLabel != null) {
             selectedLabel.setStyle("");
         }
+        model.select_status(row, col);  // notify observer
         selectedLabel = clicked;
         clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
     }

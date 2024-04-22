@@ -19,8 +19,8 @@ public class Move {
      * @param direction cardinal direction (N, S, E, W)
      */
     public Move (Coordinates coordinates, Direction direction) {
-        this.direction = direction;
         this.coordinates = coordinates;
+        this.direction = direction;
     }
 
     /**
