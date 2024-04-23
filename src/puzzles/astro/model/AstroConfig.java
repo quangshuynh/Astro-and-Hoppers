@@ -153,79 +153,71 @@ public class AstroConfig implements Configuration{
     }
 
     /**
-     * Checks if a piece can move and add neighbor (getNeighbors helper function)
-     * A piece can move if there is another piece in the same row/column as selected piece
-     * A piece moves towards the other piece until the path is blocked (it passes over the goal)
-     * A piece can only move towards another piece in the same row/column
+     * Checks if a piece can move and adds a neighbor configuration if possible.
+     * A piece can only move if there is another piece in the same row or column.
+     * It will move towards the other piece and stop one tile before it
+     * A piece must travel over the goal if there isn't another piece blocking it
+     * The astronaut ("A") has to end at goal
      *
      * @param row row index
      * @param col column index
      * @param direction cardinal direction (n, s, e, w)
      */
     private void checkAndAddNeighbor(int row, int col, Direction direction) {
-        int deltaRow = 0;
-        int deltaCol = 0;
-        switch(direction) {
-            case NORTH:
-                deltaRow = -1;
+        int newRow = row;
+        int newCol = col;
+        boolean moved = false;
+
+        // Determine the new position based on the direction
+        while (true) {
+            switch (direction) {
+                case NORTH:
+                    newRow--;
+                    break;
+                case SOUTH:
+                    newRow++;
+                    break;
+                case WEST:
+                    newCol--;
+                    break;
+                case EAST:
+                    newCol++;
+                    break;
+            }
+
+            // Check boundaries
+            if (newRow < 0 || newRow >= rows || newCol < 0 || newCol >= cols) {
                 break;
-            case SOUTH:
-                deltaRow = 1;
+            }
+
+            // Check for other pieces or obstacles
+            if (!grid[newRow][newCol].equals(".")) {
+                if (grid[row][col].equals("A") && (newRow != goalCoords.row() || newCol != goalCoords.col())) {
+                    break;
+                }
+                moved = true;
                 break;
-            case WEST:
-                deltaCol = -1;
-                break;
-            case EAST:
-                deltaCol = 1;
-                break;
-        }
-        int nextRow = row + deltaRow, nextCol = col + deltaCol;
-        boolean foundBlockingPiece = false;
-        int lastFreeRow = row, lastFreeCol = col;  // Start at the current position.
-        while (isValidPosition(nextRow, nextCol) && grid[nextRow][nextCol].equals(".")) {
-            lastFreeRow = nextRow;
-            lastFreeCol = nextCol;
-            nextRow += deltaRow;
-            nextCol += deltaCol;
+            }
+
+            moved = true;
+            // Continue moving in the direction if there's no obstacle
         }
 
-        if (isValidPosition(nextRow, nextCol) && !grid[nextRow][nextCol].equals(".")) {
-            foundBlockingPiece = true;
-        }
-        if (foundBlockingPiece && (lastFreeRow != row || lastFreeCol != col)) {
+        // If a valid move was found, create a new configuration
+        if (moved) {
             AstroConfig newConfig = new AstroConfig(this);
+            // Move the piece in the new configuration
             newConfig.grid[row][col] = ".";
-            newConfig.grid[lastFreeRow][lastFreeCol] = this.grid[row][col];
-            newConfig.updatePositions(row, col, lastFreeRow, lastFreeCol);
+            newConfig.grid[newRow][newCol] = this.grid[row][col];
+            // Update coordinates if it's the astronaut
+            if (this.grid[row][col].equals("A")) {
+                newConfig.astroCoords = new Coordinates(newRow, newCol);
+            }
+            // Add the new configuration to the neighbors
             this.neighbors.add(newConfig);
         }
     }
 
-
-    /**
-     * Checks if a position is valid
-     *
-     * @param row row index
-     * @param col column index
-     * @return whether a position is valid or not
-     */
-    private boolean isValidPosition(int row, int col) {
-        return(row >= 0) && (row < rows) && (col >= 0) && (col < cols);
-    }
-
-    /**
-     * Update the positions after moving
-     *
-     * @param oldRow old row index
-     * @param oldCol old column index
-     * @param newRow row index that it is moved to
-     * @param newCol column index that it is moved to
-     */
-    private void updatePositions(int oldRow, int oldCol, int newRow, int newCol) {
-        if(astroCoords.row() == oldRow && astroCoords.col() == oldCol) {
-            this.astroCoords = new Coordinates(newRow, newCol);
-        }
-    }
 
     /**
      * Checks if another object's hours and current is equal to this config
