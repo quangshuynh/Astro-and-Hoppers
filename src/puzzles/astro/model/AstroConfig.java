@@ -164,60 +164,49 @@ public class AstroConfig implements Configuration{
      * @param direction cardinal direction (n, s, e, w)
      */
     private void checkAndAddNeighbor(int row, int col, Direction direction) {
-        int newRow = row;
-        int newCol = col;
-        boolean moved = false;
-
-        // Determine the new position based on the direction
-        while (true) {
-            switch (direction) {
-                case NORTH:
-                    newRow--;
-                    break;
-                case SOUTH:
-                    newRow++;
-                    break;
-                case WEST:
-                    newCol--;
-                    break;
-                case EAST:
-                    newCol++;
-                    break;
-            }
-
-            // Check boundaries
-            if (newRow < 0 || newRow >= rows || newCol < 0 || newCol >= cols) {
+        int dRow = 0;
+        int dCol = 0;
+        switch (direction) {
+            case NORTH:
+                dRow = -1;
                 break;
-            }
-
-            // Check for other pieces or obstacles
-            if (!grid[newRow][newCol].equals(".")) {
-                if (grid[row][col].equals("A") && (newRow != goalCoords.row() || newCol != goalCoords.col())) {
-                    break;
-                }
-                moved = true;
+            case SOUTH:
+                dRow = 1;
                 break;
-            }
-
-            moved = true;
-            // Continue moving in the direction if there's no obstacle
+            case EAST:
+                dCol = 1;
+                break;
+            case WEST:
+                dCol = -1;
+                break;
         }
-
-        // If a valid move was found, create a new configuration
-        if (moved) {
-            AstroConfig newConfig = new AstroConfig(this);
-            // Move the piece in the new configuration
-            newConfig.grid[row][col] = ".";
-            newConfig.grid[newRow][newCol] = this.grid[row][col];
-            // Update coordinates if it's the astronaut
-            if (this.grid[row][col].equals("A")) {
-                newConfig.astroCoords = new Coordinates(newRow, newCol);
+        int nextRow = row + dRow;
+        int nextCol = col + dCol;
+        boolean foundPiece = false;
+        while(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols) {  // continue until boundary
+            if(!grid[nextRow][nextCol].equals(".")) {  // continue until piece is found
+                foundPiece = true;
+                break;
             }
-            // Add the new configuration to the neighbors
-            this.neighbors.add(newConfig);
+            nextRow += dRow;
+            nextCol += dCol;
+        }
+        if(foundPiece && !(nextRow == goalCoords.row() && nextCol == goalCoords.col())) {  // move one tile less
+            nextRow -= dRow;
+            nextCol -= dCol;
+        }
+        if(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols && !(nextRow == row && nextCol == col)) {
+            if(grid[nextRow][nextCol].equals(".") || (nextRow == goalCoords.row() && nextCol == goalCoords.col())) {
+                AstroConfig newConfig = new AstroConfig(this);
+                newConfig.grid[row][col] = ".";
+                newConfig.grid[nextRow][nextCol] = grid[row][col];
+                if(grid[row][col].equals("A")) {
+                    newConfig.astroCoords = new Coordinates(nextRow, nextCol);
+                }
+                this.neighbors.add(newConfig);
+            }
         }
     }
-
 
     /**
      * Checks if another object's hours and current is equal to this config
