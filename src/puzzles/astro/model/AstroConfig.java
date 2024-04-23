@@ -200,7 +200,7 @@ public class AstroConfig implements Configuration{
                 AstroConfig newConfig = new AstroConfig(this);
                 newConfig.grid[row][col] = ".";
                 newConfig.grid[nextRow][nextCol] = grid[row][col];
-                if(grid[row][col].equals("A")) {
+                if(grid[row][col].equals("A")) {  // update astro coordinates
                     newConfig.astroCoords = new Coordinates(nextRow, nextCol);
                 }
                 this.neighbors.add(newConfig);
