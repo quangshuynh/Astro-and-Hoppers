@@ -106,11 +106,15 @@ public class AstroModel {
                 notifyObservers("Next step!");
                 Solver solver = new Solver();
                 List<Configuration> solution = solver.solve(currentConfig);
-                //todo assign coordinate to next solution step and move
-            } else {
-                notifyObservers("Already solved");
+                if(solution != null && !solution.isEmpty()) {
+                    Configuration nextStep = solution.get(1);
+                    currentConfig = (AstroConfig) nextStep;
+                    // TODO: add logic here to actually move to the next step, update the state as needed
+                } else {
+                    notifyObservers("Already solved");
+                }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             notifyObservers("No solution!");
         }
     }
