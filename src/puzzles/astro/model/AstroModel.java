@@ -100,6 +100,21 @@ public class AstroModel {
         }
     }
 
+    /**
+     * Clears the entire game board by setting all cells to the empty symbol.
+     */
+    public void clearBoard() {
+        for(int row = 0; row < getRow(); row++) {
+            for(int col = 0; col < getCol(); col++) {
+                currentConfig.grid[row][col] = EMPTY_SYMBOL;
+            }
+        }
+    }
+
+
+    /**
+     * Helps the user make the next move
+     */
     public void getHint() {
         try {
             if(!currentConfig.isSolution()) {
@@ -107,14 +122,14 @@ public class AstroModel {
                 Solver solver = new Solver();
                 List<Configuration> solution = solver.solve(currentConfig);
                 if(solution != null && !solution.isEmpty()) {
+                    clearBoard();
                     Configuration nextStep = solution.get(1);
                     currentConfig = (AstroConfig) nextStep;
-                    // TODO: add logic here to actually move to the next step, update the state as needed
-                } else {
-                    notifyObservers("Already solved");
+                } else if(currentConfig.isSolution()) {
+                    notifyObservers("Already solved!");
                 }
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             notifyObservers("No solution!");
         }
     }

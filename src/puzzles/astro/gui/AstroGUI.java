@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
@@ -145,8 +146,32 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         main.setBottom(fp);
         main.setTop(top);
 
-        /** Scene */
+        /** Keybinds */
         Scene scene = new Scene(main);
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    switch (event.getCode()) {
+                        case UP, W:  // move up
+                            model.makeMove(Direction.NORTH);
+                            break;
+                        case DOWN, S:  // move down
+                            model.makeMove(Direction.SOUTH);
+                            break;
+                        case LEFT, A:  // move left
+                            model.makeMove(Direction.WEST);
+                            break;
+                        case RIGHT, D:  // move right
+                            model.makeMove(Direction.EAST);
+                            break;
+                        case SPACE:  // load puzzle
+                            model.loadPuzzle(filename);
+                        case H:  // hint
+                            model.getHint();
+                        case R:  // reset puzzle
+                            model.resetPuzzle();
+                    }
+                });
+
+        /** Scene */
         stage.setScene(scene);
         stage.setTitle("AstroGUI");
         stage.show();
@@ -178,6 +203,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                     case "G" -> label.setGraphic(new ImageView(purpleRobot));
                     case "H" -> label.setGraphic(new ImageView(whiteRobot));
                     case "I" -> label.setGraphic(new ImageView(yellowRobot));
+                    case "." -> label.setText("");
                 }
             }
             status.setText(msg);
