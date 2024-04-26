@@ -21,6 +21,12 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
+
+/**
+ * AstroGUI
+ *
+ * @author Quang Huynh
+ */
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
     private AstroModel model;  // astro model
     private String filename;  // file name of astro
@@ -32,19 +38,18 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
     // for demonstration purposes
     /** Images */
-    private Image astronaut = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"astro.png"));
-    private Image earthGoal = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"earth.png"));
-    private Image blueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
-    private Image greenRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-green.png"));
-    private Image lightblueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-lightblue.png"));
-    private Image orangeRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-orange.png"));
-    private Image pinkRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-pink.png"));
-    private Image purpleRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-purple.png"));
-    private Image whiteRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-white.png"));
-    private Image yellowRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-yellow.png"));
-
-    private BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/space.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-    private Background background = new Background(backgroundImage);
+    private final Image astronaut = getResourceIMG("astro.png");
+    private final Image earthGoal = getResourceIMG("earth.png");
+    private final Image blueRobot = getResourceIMG("robot-blue.png");
+    private final Image greenRobot = getResourceIMG("robot-green.png");
+    private final Image lightblueRobot = getResourceIMG("robot-lightblue.png");
+    private final Image orangeRobot = getResourceIMG("robot-orange.png");
+    private final Image pinkRobot = getResourceIMG("robot-pink.png");
+    private final Image purpleRobot = getResourceIMG("robot-purple.png");
+    private final Image whiteRobot = getResourceIMG("robot-white.png");
+    private final Image yellowRobot = getResourceIMG("robot-yellow.png");
+    private final BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/space.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+    private final Background background = new Background(backgroundImage);
 
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
@@ -166,7 +171,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 int row = GridPane.getRowIndex(label);
                 int col = GridPane.getColumnIndex(label);
                 Coordinates coordinates = new Coordinates(row, col);
-                String value = astroModel.getContent(coordinates);
+                String value = String.valueOf(astroModel.getContent(coordinates));
                 switch(value) {
                     case "A" -> label.setGraphic(new ImageView(astronaut));
                     case "*" -> label.setGraphic(new ImageView(earthGoal));
@@ -196,6 +201,16 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         model.select_status(row, col);  // notify observer
         selectedLabel = clicked;
         clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+    }
+
+    /**
+     * Gets resource image
+     *
+     * @param resource resource file
+     * @return resource image
+     */
+    public Image getResourceIMG(String resource) {
+        return new Image(Objects.requireNonNull(getClass().getResourceAsStream(RESOURCES_DIR + resource)));
     }
 
     /**
