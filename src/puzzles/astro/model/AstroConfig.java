@@ -79,7 +79,6 @@ public class AstroConfig implements Configuration{
                 Piece robot = new Piece(robotSymbol, robotCoords);
                 totalPieces.add(robot);
             }
-
             /** Assign Grid with remaining cells*/
             for(int row = 0; row < rows; row++) {
                 for(int col = 0; col < cols; col++) {
@@ -107,7 +106,7 @@ public class AstroConfig implements Configuration{
         while(Piece.isValidMove(grid, newPos, dir)) {
             newPos = adjacent_piece(newPos, dir);
         }
-        if (newPos.row() < 0 || newPos.row() >= rows || newPos.col() < 0 || newPos.col() >= cols) {
+        if(newPos.row() < 0 || newPos.row() >= rows || newPos.col() < 0 || newPos.col() >= cols) {
             throw new IllegalArgumentException("Moved piece out of bounds!");
         }
         grid[current.coords().row()][current.coords().col()] = ".";
@@ -157,7 +156,7 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public boolean isSolution() {
-        return Objects.equals(astroCoords, goalCoords);
+        return Objects.equals(astronaut.coords(), goalCoords);
     }
 
     /**
@@ -185,7 +184,7 @@ public class AstroConfig implements Configuration{
     }
 
     /**
-     * Checks if another object's hours and current is equal to this config
+     * Checks if another object's coordinates and goal is equal to this config
      *
      * @param other The object to compare against.
      * @return true if the objects are equal, false otherwise.
@@ -204,7 +203,7 @@ public class AstroConfig implements Configuration{
     /**
      * Computes the hash code for this config
      *
-     * @return The hash code of the clock config
+     * @return The hash code of the astro config
      */
     @Override
     public int hashCode() {
