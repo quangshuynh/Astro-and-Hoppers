@@ -30,6 +30,7 @@ public class AstroModel {
 
     /** the current configuration */
     private AstroConfig currentConfig;
+    private Piece piece = null;
 
     /**
      * The view calls this to add itself as an observer.
@@ -92,9 +93,8 @@ public class AstroModel {
      */
     public void loadPuzzle(String filename) {
         try {
-            this.filename = filename;
             this.currentConfig = new AstroConfig(filename);
-            notifyObservers("Loaded: " + filename);
+            this.filename = filename;
         } catch(IOException e) {
             notifyObservers("Failed to load puzzle: " + filename);
         }
@@ -119,12 +119,8 @@ public class AstroModel {
      * Resets the puzzle to the initial configuration based on the current file.
      */
     public void resetPuzzle() {
-        try {
-            this.currentConfig = new AstroConfig(this.filename);
-            notifyObservers("Puzzle reset!");
-        } catch(IOException e) {
-            notifyObservers("Failed to reset puzzle");
-        }
+        loadPuzzle(filename);
+        notifyObservers("Puzzle reset!");
     }
 
     /**
@@ -133,9 +129,12 @@ public class AstroModel {
      * @param coord coordinates (row, col)
      * @return the cell value
      */
-    public Piece getContent(Coordinates coord) {
+    public String getContent(Coordinates coord) {
         int row = coord.row();
         int col = coord.col();
+        if(row < 0 || row >= getRow() || col < 0 || col >= getCol()) {
+            return "Invalid";
+        }
         return currentConfig.getGrid()[row][col];
     }
 
@@ -157,7 +156,7 @@ public class AstroModel {
      * @param col colummn selected
      */
     public void select_status(int row, int col) {
-        Piece content = getContent(new Coordinates(row, col));
+        String content = getContent(new Coordinates(row, col));
         if(content.equals("A") || content.equals("B") || content.equals("C") ||
                 content.equals("D") || content.equals("E") || content.equals("F") ||
                 content.equals("G") || content.equals("H") || content.equals("I")) {

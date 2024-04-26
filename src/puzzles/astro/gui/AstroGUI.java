@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
 import puzzles.common.Direction;
@@ -18,7 +19,9 @@ import puzzles.hoppers.model.HoppersModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 
@@ -33,6 +36,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     private Label status;  // game status
     private GridPane game;  // gridpane of game
     private Label selectedLabel; // selected box
+    private FileChooser fileChooser; // file chooser
+    private Stage stage; // gui stage
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
@@ -62,6 +67,10 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         filename = getParameters().getRaw().get(0);
         model = new AstroModel(filename);
         model.addObserver(this);
+        fileChooser = new FileChooser();
+        this.fileChooser.setTitle("Open Astro File");
+        this.fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files","*.txt"));
+        this.fileChooser.setInitialDirectory(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
     }
 
     /**
@@ -134,7 +143,10 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         /** SetOnAction */
         load.setOnAction(e -> {
-            model.loadPuzzle(filename);
+            File file=fileChooser.showOpenDialog(stage);
+            if(file != null){
+                this.model.loadPuzzle(file.getPath());
+            }
             status.setText("Loaded: " + filename);  // load puzzle name
         });
         hint.setOnAction(e -> model.getHint());
@@ -152,9 +164,11 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         /** Scene */
         Scene scene = new Scene(main);
-        stage.setScene(scene);
-        stage.setTitle("AstroGUI");
-        stage.show();
+        this.stage = stage;
+        this.stage.setScene(scene);
+        this.stage.setTitle("AstroGUI");
+        this.stage.show();
+        update(model, "");
     }
 
     /**
@@ -166,12 +180,31 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     @Override
     public void update(AstroModel astroModel, String msg) {
+        game.getChildren().clear();
+
+        /** Updating game grid */
+        for(int row = 0; row < astroModel.getRow(); row++) {
+            for(int col = 0; col < astroModel.getCol(); col++) {
+                Label tile = new Label("");
+                tile.setMinSize(ICON_SIZE, ICON_SIZE);
+                tile.setAlignment(Pos.CENTER);
+                tile.setBackground(background);
+                int r = row;
+                int c = col;
+                tile.setOnMouseClicked(e -> select(tile, r, c));
+                GridPane.setRowIndex(tile, row);
+                GridPane.setColumnIndex(tile, col);
+                game.getChildren().add(tile);
+            }
+        }
+
+        /** Updating cell tiles */
         for(Node child : game.getChildren()) {
             if(child instanceof Label label) {
                 int row = GridPane.getRowIndex(label);
                 int col = GridPane.getColumnIndex(label);
                 Coordinates coordinates = new Coordinates(row, col);
-                String value = String.valueOf(astroModel.getContent(coordinates));
+                String value = astroModel.getContent(coordinates);
                 switch(value) {
                     case "A" -> label.setGraphic(new ImageView(astronaut));
                     case "*" -> label.setGraphic(new ImageView(earthGoal));
@@ -186,6 +219,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 }
             }
             status.setText(msg);
+            stage.sizeToScene();
         }
     }
 
