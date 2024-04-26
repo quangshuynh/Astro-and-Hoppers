@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
@@ -31,28 +30,21 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
-    /**
-     * Gets resource image
-     *
-     * @param resource resource file
-     * @return resource image
-     */
-    public Image getResourceIMG(String resource) {
-        return new Image(Objects.requireNonNull(getClass().getResourceAsStream(RESOURCES_DIR + resource)));
-    }
+    // for demonstration purposes
     /** Images */
-    private final Image astronaut = getResourceIMG("astro.png");
-    private final Image earthGoal = getResourceIMG("earth.png");
-    private final Image blueRobot = getResourceIMG("robot-blue.png");
-    private final Image greenRobot = getResourceIMG("robot-green.png");
-    private final Image lightblueRobot = getResourceIMG("robot-lightblue.png");
-    private final Image orangeRobot = getResourceIMG("robot-orange.png");
-    private final Image pinkRobot = getResourceIMG("robot-pink.png");
-    private final Image purpleRobot = getResourceIMG("robot-purple.png");
-    private final Image whiteRobot = getResourceIMG("robot-white.png");
-    private final Image yellowRobot = getResourceIMG("robot-yellow.png");
-    private final BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/space.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-    private final Background background = new Background(backgroundImage);
+    private Image astronaut = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"astro.png"));
+    private Image earthGoal = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"earth.png"));
+    private Image blueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-blue.png"));
+    private Image greenRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-green.png"));
+    private Image lightblueRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-lightblue.png"));
+    private Image orangeRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-orange.png"));
+    private Image pinkRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-pink.png"));
+    private Image purpleRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-purple.png"));
+    private Image whiteRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-white.png"));
+    private Image yellowRobot = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"robot-yellow.png"));
+
+    private BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/space.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+    private Background background = new Background(backgroundImage);
 
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
@@ -62,9 +54,9 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      * Initialize AstroModel with getting filename and add observer
      */
     public void init() throws IOException {
-            filename = getParameters().getRaw().get(0);
-            model = new AstroModel(filename);
-            model.addObserver(this);
+        filename = getParameters().getRaw().get(0);
+        model = new AstroModel(filename);
+        model.addObserver(this);
     }
 
     /**
@@ -153,32 +145,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         main.setBottom(fp);
         main.setTop(top);
 
-        /** Keybinds */
-        Scene scene = new Scene(main);
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                    switch (event.getCode()) {
-                        case UP, W:  // move up
-                            model.makeMove(Direction.NORTH);
-                            break;
-                        case DOWN, S:  // move down
-                            model.makeMove(Direction.SOUTH);
-                            break;
-                        case LEFT, A:  // move left
-                            model.makeMove(Direction.WEST);
-                            break;
-                        case RIGHT, D:  // move right
-                            model.makeMove(Direction.EAST);
-                            break;
-                        case SPACE:  // load puzzle
-                            model.loadPuzzle(filename);
-                        case H:  // hint
-                            model.getHint();
-                        case R:  // reset puzzle
-                            model.resetPuzzle();
-                    }
-                });
-
         /** Scene */
+        Scene scene = new Scene(main);
         stage.setScene(scene);
         stage.setTitle("AstroGUI");
         stage.show();
@@ -198,7 +166,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 int row = GridPane.getRowIndex(label);
                 int col = GridPane.getColumnIndex(label);
                 Coordinates coordinates = new Coordinates(row, col);
-                String value = String.valueOf(astroModel.getContent(coordinates));
+                String value = astroModel.getContent(coordinates);
                 switch(value) {
                     case "A" -> label.setGraphic(new ImageView(astronaut));
                     case "*" -> label.setGraphic(new ImageView(earthGoal));
@@ -210,7 +178,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                     case "G" -> label.setGraphic(new ImageView(purpleRobot));
                     case "H" -> label.setGraphic(new ImageView(whiteRobot));
                     case "I" -> label.setGraphic(new ImageView(yellowRobot));
-                    case "." -> label.setText("");
                 }
             }
             status.setText(msg);

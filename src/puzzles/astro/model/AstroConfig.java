@@ -2,13 +2,14 @@ package puzzles.astro.model;
 
 import puzzles.common.Coordinates;
 import puzzles.common.Direction;
-import puzzles.common.Direction.*;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+
+import static puzzles.common.Direction.*;
 
 /**
  * Represents a configuration for solving Astro puzzles
@@ -18,16 +19,14 @@ import java.util.*;
  */
 
 public class AstroConfig implements Configuration{
-    public Piece[][] grid;
+    public String[][] grid;
     private Coordinates astroCoords;
-    private Coordinates robotCoords;
-    private static Coordinates goalCoords;
+    private Coordinates goalCoords;
     public int rows;
     public int cols;
-    private Piece astronaut;
-    private Set<Piece> totalPieces;
     private Collection<Configuration> neighbors;
-    private Coordinates prevMove = null;
+    private Set<Piece> totalPieces;
+    private Piece astronaut;
 
     /**
      * Construct new AstroConfig
@@ -43,18 +42,15 @@ public class AstroConfig implements Configuration{
             String dim[] = line.split("\\s+");
             rows = Integer.parseInt(dim[0]);  // first line, first int is row
             cols = Integer.parseInt(dim[1]); // first line, second int is col
-            grid = new Piece[rows][cols];  // initialize grid array with specified dimensions
+            grid = new String[rows][cols];  // initialize grid array with specified dimensions
 
             /** Read goal info */
             line = br.readLine();
             String[] goalLine = line.split("\\s+");
-            String goalSymbol = goalLine[0];
             int goalRow = Integer.parseInt(goalLine[1].split(",")[0]);
             int goalColumn = Integer.parseInt(goalLine[1].split(",")[1]);
-            Piece goal = new Piece(goalSymbol, goalCoords);
+            grid[goalRow][goalColumn] = goalLine[0];
             goalCoords = new Coordinates(goalRow, goalColumn);
-            grid[goalRow][goalColumn] = goal;
-
 
             /** Read astronaut info */
             line = br.readLine();
@@ -62,10 +58,11 @@ public class AstroConfig implements Configuration{
             String astroSymbol = astroLine[0];
             int astroRow = Integer.parseInt(astroLine[1].split(",")[0]);
             int astroColumn = Integer.parseInt(astroLine[1].split(",")[1]);
+            grid[astroRow][astroColumn] = astroLine[0];
             astroCoords = new Coordinates(astroRow, astroColumn);
             astronaut = new Piece(astroSymbol, astroCoords);
-            grid[astroRow][astroColumn] = astronaut;
             totalPieces.add(astronaut);
+
 
             /** Read number of robots and robot info */
             line = br.readLine();
@@ -73,22 +70,20 @@ public class AstroConfig implements Configuration{
             for(int i = 0; i < numRobots; i++) {
                 line = br.readLine();
                 String[] robotInfo = line.split("\\s+");
-                char robotChar = robotInfo[0].charAt(0);
-                String robotSymbol = String.valueOf(robotChar);
+                String robotSymbol = robotInfo[0];
                 int robotRow = Integer.parseInt(robotInfo[1].split(",")[0]);
                 int robotColumn = Integer.parseInt(robotInfo[1].split(",")[1]);
-                robotCoords = new Coordinates(robotRow, robotColumn);
+                grid[robotRow][robotColumn] = robotSymbol;
+                Coordinates robotCoords = new Coordinates(robotRow, robotColumn);
                 Piece robot = new Piece(robotSymbol, robotCoords);
-                grid[robotRow][robotColumn] = robot;
                 totalPieces.add(robot);
             }
+
             /** Assign Grid with remaining cells*/
             for(int row = 0; row < rows; row++) {
                 for(int col = 0; col < cols; col++) {
                     if(grid[row][col] == null) {
-                        Coordinates coords = new Coordinates(row, col);
-                        Piece empty = new Piece(".", coords);
-                        grid[row][col] = empty;
+                        grid[row][col] = ".";
                     }
                 }
             }
@@ -100,54 +95,28 @@ public class AstroConfig implements Configuration{
      *
      * @param other other AstroConfig
      */
-    public AstroConfig(AstroConfig other, Piece current, Direction dir) throws Exception {
+    public AstroConfig(AstroConfig other) {
         this.rows = other.rows;
         this.cols = other.cols;
-        this.grid = new Piece[other.grid.length][other.grid[0].length];
-        for(int row = 0; row < grid.length; row++) {
-            for(int col = 0; col < grid[0].length; col++) {
-                if(other.grid[row][col] == current) continue;
-                grid[row][col] = other.grid[row][col];
-            }
-        }
+        this.grid = copyGrid(other.grid);
         this.astroCoords = other.astroCoords;
+        this.goalCoords = other.goalCoords;
         this.neighbors = new HashSet<>();
-        Coordinates newPos = current.coords();
-        while(Piece.isValidMove(grid, newPos, dir)) {
-            newPos = adjacent_piece(newPos, dir);
-        }
-        if(switch(dir) {
-            case NORTH -> newPos.row() == 0;
-            case SOUTH -> newPos.row() == grid.length -1;
-            case EAST -> newPos.col() == grid[0].length -1;
-            case WEST -> newPos.col() == 0;
-        }) throw new Exception();
-        Piece otherPiece = new Piece(current.name(), newPos);
-        grid[newPos.row()][newPos.col()] = otherPiece;
-        Piece movedPiece = new Piece(current.name(), newPos);
-        this.astronaut = other.astronaut.equals(current) ? movedPiece : other.astronaut;
-        this.totalPieces = new HashSet<>(other.totalPieces);
-        this.totalPieces.remove(current);
-        this.totalPieces.add(movedPiece);
-        this.prevMove = newPos;
     }
 
     /**
-     * Gets adjacent piece in all 4 directions
+     * Copies other grid
      *
-     * @param coords coordinates
-     * @param dir cardinal direction (n, s, e, w)
-     * @return coordinates of adjacent piece
+     * @param original original grid
+     * @return copied grid
      */
-    public static Coordinates adjacent_piece(Coordinates coords, Direction dir) {
-        return switch(dir) {
-            case NORTH -> new Coordinates(coords.row() - 1, coords.col());
-            case SOUTH -> new Coordinates(coords.row() + 1, coords.col());
-            case EAST -> new Coordinates(coords.row(), coords.col() + 1);
-            case WEST -> new Coordinates(coords.row(), coords.col() - 1);
-        };
+    private String[][] copyGrid(String[][] original) {
+        String[][] newGrid = new String[original.length][original[0].length];
+        for (int i = 0; i < original.length; i++) {
+            System.arraycopy(original[i], 0, newGrid[i], 0, original[i].length);
+        }
+        return newGrid;
     }
-
 
     /**
      * Checks if the current config is a solution to Astro puzzle
@@ -156,7 +125,7 @@ public class AstroConfig implements Configuration{
      */
     @Override
     public boolean isSolution() {
-        return Objects.equals(astronaut.coords(), goalCoords);
+        return Objects.equals(astroCoords, goalCoords);
     }
 
     /**
@@ -167,24 +136,78 @@ public class AstroConfig implements Configuration{
     @Override
     public Collection<Configuration> getNeighbors() {
         this.neighbors = new HashSet<>();
-        for(Direction dir : Direction.values()) {
-            for(Piece p : totalPieces) {
-                if(!p.isValidMove(grid, dir)) {
+        for(int row = 0; row < this.rows; row++) {  // identity robots & astronaut
+            for(int col = 0; col < this.cols; col++) {
+                if(grid[row][col].equals(".") || grid[row][col].equals(this.grid[goalCoords.row()][goalCoords.col()])) {
                     continue;
                 }
-                try {
-                    AstroConfig piece = new AstroConfig(this, p, dir);
-                    neighbors.add(piece);
-                } catch(Exception ignored) {
-                    // ignored
-                }
+                checkAndAddNeighbor(row, col, NORTH);  // check movement for all 4 directions
+                checkAndAddNeighbor(row, col, SOUTH);
+                checkAndAddNeighbor(row, col, WEST);
+                checkAndAddNeighbor(row, col, EAST);
             }
         }
         return this.neighbors;
     }
 
     /**
-     * Checks if another object's coordinates and goal is equal to this config
+     * Checks if a piece can move and adds a neighbor configuration if possible.
+     * A piece can only move if there is another piece in the same row or column.
+     * It will move towards the other piece and stop one tile before it
+     * A piece must travel over the goal if there isn't another piece blocking it
+     * The astronaut ("A") has to end at goal
+     *
+     * @param row row index
+     * @param col column index
+     * @param direction cardinal direction (n, s, e, w)
+     */
+    private void checkAndAddNeighbor(int row, int col, Direction direction) {
+        int dRow = 0;
+        int dCol = 0;
+        switch (direction) {
+            case NORTH:
+                dRow = -1;
+                break;
+            case SOUTH:
+                dRow = 1;
+                break;
+            case EAST:
+                dCol = 1;
+                break;
+            case WEST:
+                dCol = -1;
+                break;
+        }
+        int nextRow = row + dRow;
+        int nextCol = col + dCol;
+        boolean foundPiece = false;
+        while(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols) {  // continue until boundary
+            if(!grid[nextRow][nextCol].equals(".")) {  // continue until piece is found
+                foundPiece = true;
+                break;
+            }
+            nextRow += dRow;
+            nextCol += dCol;
+        }
+        if(foundPiece && !(nextRow == goalCoords.row() && nextCol == goalCoords.col())) {  // move one tile less
+            nextRow -= dRow;
+            nextCol -= dCol;
+        }
+        if(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols && !(nextRow == row && nextCol == col)) {
+            if(grid[nextRow][nextCol].equals(".") || (nextRow == goalCoords.row() && nextCol == goalCoords.col())) {
+                AstroConfig newConfig = new AstroConfig(this);
+                newConfig.grid[row][col] = ".";
+                newConfig.grid[nextRow][nextCol] = grid[row][col];
+                if(grid[row][col].equals(astronaut.name())) {  // update astro coordinates
+                    newConfig.astroCoords = new Coordinates(nextRow, nextCol);
+                }
+                this.neighbors.add(newConfig);
+            }
+        }
+    }
+
+    /**
+     * Checks if another object's hours and current is equal to this config
      *
      * @param other The object to compare against.
      * @return true if the objects are equal, false otherwise.
@@ -203,7 +226,7 @@ public class AstroConfig implements Configuration{
     /**
      * Computes the hash code for this config
      *
-     * @return The hash code of the astro config
+     * @return The hash code of the clock config
      */
     @Override
     public int hashCode() {
@@ -234,7 +257,7 @@ public class AstroConfig implements Configuration{
      *
      * @return return grid matrix of astro
      */
-    public Piece[][] getGrid() {
+    public String[][] getGrid() {
         return grid;
     }
 }

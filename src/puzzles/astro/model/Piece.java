@@ -19,7 +19,7 @@ public record Piece(String name, Coordinates coords) {
      * @param dir  cardinal direction (n, s, e, w)
      * @return whether move is valid or not
      */
-    public static boolean isValidMove(Piece[][] grid, Coordinates coords, Direction dir) {
+    public static boolean isValidMove(String[][] grid, Coordinates coords, Direction dir) {
         try {
             if(dir == Direction.NORTH) {
                 return grid[coords.row() - 1][coords.col()] == null;
@@ -44,7 +44,7 @@ public record Piece(String name, Coordinates coords) {
      * @param dir cardinal direction (n, s, e, w)
      * @return whether move is valid or not
      */
-    public boolean isValidMove(Piece[][] grid, Direction dir) {
+    public boolean isValidMove(String[][] grid, Direction dir) {
         return isValidMove(grid, coords, dir);
     }
 
