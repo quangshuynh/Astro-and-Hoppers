@@ -198,7 +198,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                 int row = GridPane.getRowIndex(label);
                 int col = GridPane.getColumnIndex(label);
                 Coordinates coordinates = new Coordinates(row, col);
-                String value = astroModel.getContent(coordinates);
+                String value = String.valueOf(astroModel.getContent(coordinates));
                 switch(value) {
                     case "A" -> label.setGraphic(new ImageView(astronaut));
                     case "*" -> label.setGraphic(new ImageView(earthGoal));
