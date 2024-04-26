@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Hoppers hoppers-3.txt" type="Application" factoryName="Application">
-    <option name="ALTERNATIVE_JRE_PATH" value="liberica-21" />
+    <option name="ALTERNATIVE_JRE_PATH" value="liberica-full-22" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="puzzles.hoppers.solver.Hoppers" />
     <module name="AstroHoppers" />
