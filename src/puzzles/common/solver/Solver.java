@@ -24,48 +24,35 @@ public class Solver {
      * @return list of configs from start to solution
      */
     public List<Configuration> solve(Configuration initial) {
-        Map<Configuration, Configuration> predecessors = new HashMap<>();
-        List<Configuration> queue = new LinkedList<>();
+        Map<Configuration,Configuration> predecessors = new HashMap<>();
+        Queue<Configuration> queue = new LinkedList<>();
         queue.add(initial);
         predecessors.put(initial, null);
+        Configuration current = null;
         totalConfigs++;
         uniqueConfigs++;
-        while(!queue.isEmpty()) {
-            Configuration current = queue.remove(0);
-            if(current.isSolution()) {
-                return constructPath(predecessors, initial, current);
+        while(!queue.isEmpty()){
+            current = queue.remove();
+            if(current.isSolution()){
+                break;
             }
-            for(Configuration nbr : current.getNeighbors()) {
+            for(Configuration nbr : current.getNeighbors()){
                 totalConfigs++;
-                if(!predecessors.containsKey(nbr)) {
-                    uniqueConfigs++;
+                if(!predecessors.containsKey(nbr)){
                     predecessors.put(nbr, current);
                     queue.add(nbr);
+                    uniqueConfigs++;
                 }
             }
         }
-        return null;
-    }
-
-    /**
-     * Constructs path the initial config to the solution.
-     *
-     * @param predecessors a map from each config to its predecessor
-     * @param start initial config
-     * @param end finishing config
-     * @return the list of configurations from start to solution
-     */
-    private List<Configuration> constructPath(Map<Configuration, Configuration> predecessors, Configuration start, Configuration end) {
-        LinkedList<Configuration> path = new LinkedList<>();
-        Configuration current = end;
-        while(current != start) {
+        List<Configuration> path = new LinkedList<>();
+        while(current != null){
             path.addFirst(current);
             current = predecessors.get(current);
         }
-        path.addFirst(start);
-        List<Configuration> configPath = new ArrayList<>(path);
-        return configPath;
+        return path;
     }
+
 
     /**
      * Gets total configs

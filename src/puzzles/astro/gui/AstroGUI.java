@@ -7,8 +7,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
 import puzzles.common.Direction;
@@ -19,27 +20,29 @@ import puzzles.hoppers.model.HoppersModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Objects;
 
+
+/**
+ * AstroGUI
+ *
+ * @author Quang Huynh
+ */
 public class AstroGUI extends Application implements Observer<AstroModel, String> {
     private AstroModel model;  // astro model
     private String filename;  // file name of astro
     private Label status;  // game status
     private GridPane game;  // gridpane of game
     private Label selectedLabel; // selected box
+    private FileChooser fileChooser; // file chooser
+    private Stage stage; // gui stage
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
-    /**
-     * Gets resource image
-     *
-     * @param resource resource file
-     * @return resource image
-     */
-    public Image getResourceIMG(String resource) {
-        return new Image(Objects.requireNonNull(getClass().getResourceAsStream(RESOURCES_DIR + resource)));
-    }
+    // for demonstration purposes
     /** Images */
     private final Image astronaut = getResourceIMG("astro.png");
     private final Image earthGoal = getResourceIMG("earth.png");
@@ -62,9 +65,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      * Initialize AstroModel with getting filename and add observer
      */
     public void init() throws IOException {
-            filename = getParameters().getRaw().get(0);
-            model = new AstroModel(filename);
-            model.addObserver(this);
+        filename = getParameters().getRaw().get(0);
+        model = new AstroModel(filename);
+        model.addObserver(this);
+        fileChooser = new FileChooser();
+        this.fileChooser.setTitle("Open Astro File");
+        this.fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files","*.txt"));
+        this.fileChooser.setInitialDirectory(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
     }
 
     /**
@@ -137,8 +144,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         /** SetOnAction */
         load.setOnAction(e -> {
-            model.loadPuzzle(filename);
-            status.setText("Loaded: " + filename);  // load puzzle name
+            File file = fileChooser.showOpenDialog(stage);
+            if(file != null){
+                File astroFile = new File(file.getPath());
+                String astroFilename = astroFile.getName();
+                filename = astroFilename;
+                this.model.loadPuzzle(astroFilename);
+            }
         });
         hint.setOnAction(e -> model.getHint());
         reset.setOnAction(e -> model.resetPuzzle());
@@ -153,35 +165,14 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         main.setBottom(fp);
         main.setTop(top);
 
-        /** Keybinds */
-        Scene scene = new Scene(main);
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                    switch (event.getCode()) {
-                        case UP, W:  // move up
-                            model.makeMove(Direction.NORTH);
-                            break;
-                        case DOWN, S:  // move down
-                            model.makeMove(Direction.SOUTH);
-                            break;
-                        case LEFT, A:  // move left
-                            model.makeMove(Direction.WEST);
-                            break;
-                        case RIGHT, D:  // move right
-                            model.makeMove(Direction.EAST);
-                            break;
-                        case SPACE:  // load puzzle
-                            model.loadPuzzle(filename);
-                        case H:  // hint
-                            model.getHint();
-                        case R:  // reset puzzle
-                            model.resetPuzzle();
-                    }
-                });
-
         /** Scene */
-        stage.setScene(scene);
-        stage.setTitle("AstroGUI");
-        stage.show();
+        Scene scene = new Scene(main);
+        this.stage = stage;
+        this.stage.setScene(scene);
+        this.stage.setTitle("AstroGUI");
+        this.stage.show();
+        update(model, "");
+        model.notifyLoad(filename);
     }
 
     /**
@@ -193,6 +184,25 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     @Override
     public void update(AstroModel astroModel, String msg) {
+        game.getChildren().clear();  // clear all children after updating
+
+        /** Updating game grid */
+        for(int row = 0; row < astroModel.getRow(); row++) {
+            for(int col = 0; col < astroModel.getCol(); col++) {
+                Label tile = new Label("");
+                tile.setMinSize(ICON_SIZE, ICON_SIZE);
+                tile.setAlignment(Pos.CENTER);
+                tile.setBackground(background);
+                int r = row;
+                int c = col;
+                tile.setOnMouseClicked(e -> select(tile, r, c));
+                GridPane.setRowIndex(tile, row);
+                GridPane.setColumnIndex(tile, col);
+                game.getChildren().add(tile);
+            }
+        }
+
+        /** Updating cell tiles */
         for(Node child : game.getChildren()) {
             if(child instanceof Label label) {
                 int row = GridPane.getRowIndex(label);
@@ -210,10 +220,10 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
                     case "G" -> label.setGraphic(new ImageView(purpleRobot));
                     case "H" -> label.setGraphic(new ImageView(whiteRobot));
                     case "I" -> label.setGraphic(new ImageView(yellowRobot));
-                    case "." -> label.setText("");
                 }
             }
             status.setText(msg);
+            stage.sizeToScene();
         }
     }
 
@@ -228,7 +238,17 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         }
         model.select_status(row, col);  // notify observer
         selectedLabel = clicked;
-        clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+        clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");  // border doesnt work anymore?
+    }
+
+    /**
+     * Gets resource image
+     *
+     * @param resource resource file
+     * @return resource image
+     */
+    public Image getResourceIMG(String resource) {
+        return new Image(Objects.requireNonNull(getClass().getResourceAsStream(RESOURCES_DIR + resource)));
     }
 
     /**
