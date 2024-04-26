@@ -101,19 +101,25 @@ public class AstroModel {
         }
     }
 
+    /**
+     * Does the next move for user
+     */
     public void getHint() {
-        try {
-            if(!currentConfig.isSolution()) {
-                notifyObservers("Next step!");
-                Solver solver = new Solver();
-                List<Configuration> solution = solver.solve(currentConfig);
-                //todo assign coordinate to next solution step and move
-            } else {
-                notifyObservers("Already solved");
-            }
-        } catch(Exception e) {
-            notifyObservers("No solution!");
+        Solver solver = new Solver();
+        List<Configuration>path=solver.solve(currentConfig);
+        if(path.size() == 1) {
+            notifyObservers("Already solved!");
+            return;
         }
+        else if(path.isEmpty()) {
+            notifyObservers("No solution!");
+            return;
+        }
+        if(!(path.get(1) instanceof AstroConfig astroConfig)) {  // if next step is not part of astroconfig
+            throw new RuntimeException("Next step is not AstroConfig!");
+        }
+        this.currentConfig = astroConfig;
+        notifyObservers("Next step!");
     }
 
     /**
