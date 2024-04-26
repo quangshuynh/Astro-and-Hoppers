@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import puzzles.astro.model.AstroModel;
 import puzzles.common.Coordinates;
@@ -143,11 +144,13 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
 
         /** SetOnAction */
         load.setOnAction(e -> {
-            File file=fileChooser.showOpenDialog(stage);
+            File file = fileChooser.showOpenDialog(stage);
             if(file != null){
-                this.model.loadPuzzle(file.getPath());
+                File astroFile = new File(file.getPath());
+                String astroFilename = astroFile.getName();
+                filename = astroFilename;
+                this.model.loadPuzzle(astroFilename);
             }
-            status.setText("Loaded: " + filename);  // load puzzle name
         });
         hint.setOnAction(e -> model.getHint());
         reset.setOnAction(e -> model.resetPuzzle());
@@ -169,6 +172,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         this.stage.setTitle("AstroGUI");
         this.stage.show();
         update(model, "");
+        model.notifyLoad(filename);
     }
 
     /**
@@ -180,7 +184,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     @Override
     public void update(AstroModel astroModel, String msg) {
-        game.getChildren().clear();
+        game.getChildren().clear();  // clear all children after updating
 
         /** Updating game grid */
         for(int row = 0; row < astroModel.getRow(); row++) {
@@ -234,7 +238,8 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         }
         model.select_status(row, col);  // notify observer
         selectedLabel = clicked;
-        clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+        Border border = new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, null, null));
+        clicked.setBorder(border);
     }
 
     /**

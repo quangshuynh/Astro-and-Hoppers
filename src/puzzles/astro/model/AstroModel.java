@@ -93,8 +93,9 @@ public class AstroModel {
      */
     public void loadPuzzle(String filename) {
         try {
-            this.currentConfig = new AstroConfig(filename);
             this.filename = filename;
+            this.currentConfig = new AstroConfig(filename);
+            notifyObservers("Loaded: " + filename);
         } catch(IOException e) {
             notifyObservers("Failed to load puzzle: " + filename);
         }
@@ -133,7 +134,7 @@ public class AstroModel {
         int row = coord.row();
         int col = coord.col();
         if(row < 0 || row >= getRow() || col < 0 || col >= getCol()) {
-            return "Invalid";
+            return "";
         }
         return currentConfig.getGrid()[row][col];
     }
@@ -192,5 +193,14 @@ public class AstroModel {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Notify loading file on start
+     *
+     * @param file filename
+     */
+    public void notifyLoad(String file) {
+        notifyObservers("Loaded " + file);
     }
 }
