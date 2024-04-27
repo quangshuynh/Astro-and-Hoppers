@@ -85,35 +85,84 @@ public class HoppersConfig implements Configuration{
                 if(i % 2 == 0 && board[i][j] == 'G'){ //if even row and is a green frog
                     //doing vertical and horizontal moves
                     if(isMoveValid(i - 4, j)){
-                        result.add(new HoppersConfig(this, move(i, j, i - 4, j, board)));
+                        result.add(new HoppersConfig(this, move(i, j, i - 4, j, true)));
                     }else if(isMoveValid(i + 4, j)){
-                        result.add(new HoppersConfig(this, move(i, j, i + 4, j, board)));
+                        result.add(new HoppersConfig(this, move(i, j, i + 4, j, true)));
                     }else if(isMoveValid(i, j - 4)){
-                        result.add(new HoppersConfig(this, move(i, j, i, j - 4, board)));
+                        result.add(new HoppersConfig(this, move(i, j, i, j - 4, true)));
                     }else if(isMoveValid(i, j + 4)){
-                        result.add(new HoppersConfig(this, move(i, j, i, j + 4, board)));
+                        result.add(new HoppersConfig(this, move(i, j, i, j + 4, true)));
                     }
                     //doing diagonal moves
-                }if(isMoveValid(i - 2, j - 2)){
-                    result.add(new HoppersConfig(this, move(i, j, i - 2, j - 2, board)));
-                }else if(isMoveValid(i - 2, j + 2)){
-                    result.add(new HoppersConfig(this, move(i, j, i - 2, j + 2, board)));
-                }else if(isMoveValid(i + 2, j - 2)){
-                    result.add(new HoppersConfig(this, move(i, j, i + 2, j - 2, board)));
-                }else if(isMoveValid(i + 2, j + 2)){
-                    result.add(new HoppersConfig(this, move(i, j, i + 2, j + 2, board)));
+                }else if(board[i][j] == 'G'){
+                    if(isMoveValid(i - 2, j - 2)){
+                        result.add(new HoppersConfig(this, move(i, j, i - 2, j - 2, false)));
+                    }else if(isMoveValid(i - 2, j + 2)){
+                        result.add(new HoppersConfig(this, move(i, j, i - 2, j + 2, false)));
+                    }else if(isMoveValid(i + 2, j - 2)){
+                        result.add(new HoppersConfig(this, move(i, j, i + 2, j - 2, false)));
+                    }else if(isMoveValid(i + 2, j + 2)){
+                        result.add(new HoppersConfig(this, move(i, j, i + 2, j + 2, false)));
+                    }
                 }
             }
         }
         return result;
     }
 
-    private char[][] move(int originalRow, int originalCol, int newRow, int newCol, char[][] boardUsed){
+    private char[][] move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump){
         char[][] copyBoard = new char[row][col]; //creating a copy of the board from this config to move frogs
         System.arraycopy(board, 0, copyBoard, 0, row);
+        copyBoard[newRow][newCol] = 'G'; //moving the green frog
+
+        //process deleting
+        int deleteFrogRow = 0;
+        int deleteFrogCol = 0;
+        if(longJump){ //deleting even row
+            if(newRow > originalRow && newCol == originalCol){
+                deleteFrogRow = originalRow + 2;
+                deleteFrogCol = originalCol;
+            }else if(newRow < originalRow && newCol == originalCol){
+                deleteFrogRow = originalRow - 2;
+                deleteFrogCol = originalCol;
+            }else if(newCol > originalCol && newRow == originalRow){
+                deleteFrogCol = originalCol + 2;
+                deleteFrogRow = originalRow;
+            }else if(newCol < originalCol && newRow == originalRow){
+                deleteFrogCol = originalCol - 2;
+                deleteFrogRow = originalRow;
+            }
+        }else{
+            if(newRow > originalRow && newCol > originalCol){
+                deleteFrogRow = originalRow + 1;
+                deleteFrogCol = originalCol + 1;
+            }else if(newRow > originalRow && newCol < originalCol){
+                deleteFrogRow = originalRow + 1;
+                deleteFrogCol = originalCol - 1;
+            }else if(newRow < originalRow && newCol > originalCol){
+                deleteFrogRow = originalRow - 1;
+                deleteFrogCol = originalCol + 1;
+            }else if(newRow < originalRow && newCol < originalCol){
+                deleteFrogRow = originalRow - 1;
+                deleteFrogCol = originalCol - 1;
+            }
+        }
+        if(copyBoard[deleteFrogRow][deleteFrogCol] == 'G' || copyBoard[deleteFrogRow][deleteFrogCol] == 'R'
+        || copyBoard[deleteFrogRow][deleteFrogCol] == '.'){
+            copyBoard[deleteFrogRow][deleteFrogCol] = '.';
+        }else{
+            copyBoard[deleteFrogRow][deleteFrogCol] = '*';
+        }
         return copyBoard;
     }
 
+    /**
+     * A method used in get neighbors to see if a move is valid
+     *
+     * @param newRow - the target row to move to
+     * @param newCol - the target col to move to
+     * @return if that targeted row, col is valid
+     */
     private boolean isMoveValid(int newRow, int newCol){
         boolean result = true;
         if(newRow > row - 1){
@@ -123,6 +172,8 @@ public class HoppersConfig implements Configuration{
         }else if(newCol > col - 1){
             result = false;
         }else if(newCol < 0){
+            result = false;
+        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R'){
             result = false;
         }
         return result;
