@@ -156,7 +156,7 @@ public class AstroModel {
         String content = getContent(new Coordinates(row, col));
         Set<String> validContents = Set.of("A", "B", "C", "D", "E", "F", "G", "H", "I");
         if(validContents.contains(content)) {
-            notifyObservers("Selected " + content + " at (" + row + ", " + col + ")");
+            notifyObservers("Selected \"" + content + "\" at (" + row + ", " + col + ")");
             selectedCoords = new Coordinates(row, col);
         } else {  // no piece selected
             selectedCoords = null;
@@ -224,7 +224,9 @@ public class AstroModel {
      * @return whether a move is valid or not
      */
     private boolean isValidMove(Coordinates coord) {
-        if(coord == null) return false;
+        if(coord == null) {
+            return false;
+        }
         String cellValue = currentConfig.getCellValue(coord);
         return cellValue.equals(EMPTY_SYMBOL) || cellValue.equals(EARTH_SYMBOL);
     }
