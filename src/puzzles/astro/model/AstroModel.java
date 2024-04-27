@@ -208,7 +208,7 @@ public class AstroModel {
         int newCol = start.col() + cursorCol;
         while(newRow >= 0 && newRow < getRow() && newCol >= 0 && newCol < getCol()) {
             String cellContent = currentConfig.getCellValue(new Coordinates(newRow, newCol));
-            if(!cellContent.equals(EMPTY_SYMBOL) && !cellContent.equals(EARTH_SYMBOL)) {  // Stop before the obstacle or goal
+            if(!cellContent.equals(EMPTY_SYMBOL) && !cellContent.equals(EARTH_SYMBOL)) {  // stop before the obstacle or goal
                 return new Coordinates(newRow - cursorRow, newCol - cursorCol);
             }
             newRow += cursorRow;
