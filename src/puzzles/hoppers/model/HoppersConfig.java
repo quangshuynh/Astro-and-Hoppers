@@ -84,23 +84,23 @@ public class HoppersConfig implements Configuration{
             for(int j = 0; j < col; j++){
                 if(i % 2 == 0 && board[i][j] == 'G'){ //if even row and is a green frog
                     //doing vertical and horizontal moves
-                    if(isMoveValid(i, j, i - 4, j)){
+                    if(isMoveValid(i - 4, j)){
                         result.add(new HoppersConfig(this, move(i, j, i - 4, j, board)));
-                    }else if(isMoveValid(i, j, i + 4, j)){
+                    }else if(isMoveValid(i + 4, j)){
                         result.add(new HoppersConfig(this, move(i, j, i + 4, j, board)));
-                    }else if(isMoveValid(i, j, i, j - 4)){
+                    }else if(isMoveValid(i, j - 4)){
                         result.add(new HoppersConfig(this, move(i, j, i, j - 4, board)));
-                    }else if(isMoveValid(i, j, i, j + 4)){
+                    }else if(isMoveValid(i, j + 4)){
                         result.add(new HoppersConfig(this, move(i, j, i, j + 4, board)));
                     }
                     //doing diagonal moves
-                }if(isMoveValid(i, j, i - 2, j - 2)){
+                }if(isMoveValid(i - 2, j - 2)){
                     result.add(new HoppersConfig(this, move(i, j, i - 2, j - 2, board)));
-                }else if(isMoveValid(i, j, i - 2, j + 2)){
+                }else if(isMoveValid(i - 2, j + 2)){
                     result.add(new HoppersConfig(this, move(i, j, i - 2, j + 2, board)));
-                }else if(isMoveValid(i, j, i + 2, j - 2)){
+                }else if(isMoveValid(i + 2, j - 2)){
                     result.add(new HoppersConfig(this, move(i, j, i + 2, j - 2, board)));
-                }else if(isMoveValid(i, j, i + 2, j + 2)){
+                }else if(isMoveValid(i + 2, j + 2)){
                     result.add(new HoppersConfig(this, move(i, j, i + 2, j + 2, board)));
                 }
             }
@@ -111,11 +111,21 @@ public class HoppersConfig implements Configuration{
     private char[][] move(int originalRow, int originalCol, int newRow, int newCol, char[][] boardUsed){
         char[][] copyBoard = new char[row][col]; //creating a copy of the board from this config to move frogs
         System.arraycopy(board, 0, copyBoard, 0, row);
-
+        return copyBoard;
     }
 
-    private boolean isMoveValid(int originalRow, int originalCol, int newRow, int newCol){
-
+    private boolean isMoveValid(int newRow, int newCol){
+        boolean result = true;
+        if(newRow > row - 1){
+            result = false;
+        }else if(newRow < 0){
+            result = false;
+        }else if(newCol > col - 1){
+            result = false;
+        }else if(newCol < 0){
+            result = false;
+        }
+        return result;
     }
 
     /**
