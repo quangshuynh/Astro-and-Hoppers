@@ -72,7 +72,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                 } else if(words[0].startsWith("r")) {  // reset
                     model.resetPuzzle();
                 } else if(words[0].startsWith("l")) {  // load
-                    model.loadPuzzle(filename);
+                    model.loadPuzzle(words[1]);
                 } else if(words[0].startsWith("m")) {  // make move
                     switch(words[1]) {
                         case "n" -> model.makeMove(Direction.NORTH);
