@@ -1,10 +1,8 @@
 package puzzles.hoppers.model;
 
-import puzzles.common.Direction;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
@@ -19,7 +17,6 @@ public class HoppersConfig implements Configuration{
     private char[][] board; //the board of the game
     public static int row; //the number of row start from 1
     public static int col; //the number of col start from 1
-    private Integer id; //the id of the configuration
 
     /**
      * the main constructor of the HoppersConfig
@@ -27,7 +24,6 @@ public class HoppersConfig implements Configuration{
      * @throws IOException - IOE
      */
     public HoppersConfig(String filename) throws IOException {
-        id = 0;
         try(BufferedReader reader = new BufferedReader(new FileReader(filename))){
             String[] dims = reader.readLine().split("\\s+");
             row = Integer.parseInt(dims[0]);
@@ -46,10 +42,9 @@ public class HoppersConfig implements Configuration{
     /**
      * The copy constructor used to easily create another config
      *
-     * @param other - the other HoppersConfig passed into here to make copy constructors
+     * @param board - the new board
      */
-    private HoppersConfig(HoppersConfig other, char[][]board){
-        this.id = other.id ++;
+    private HoppersConfig(char[][]board){
         this.board = board;
     }
 
@@ -82,27 +77,27 @@ public class HoppersConfig implements Configuration{
         //go through the frogs and move them, each move generate a new config
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(i % 2 == 0 && board[i][j] == 'G'){ //if even row and is a green frog
+                if(i % 2 == 0 && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a green frog
                     //doing vertical and horizontal moves
                     if(isMoveValid(i - 4, j)){
-                        result.add(new HoppersConfig(this, move(i, j, i - 4, j, true)));
+                        result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
                     }else if(isMoveValid(i + 4, j)){
-                        result.add(new HoppersConfig(this, move(i, j, i + 4, j, true)));
+                        result.add(new HoppersConfig(move(i, j, i + 4, j, true, board[i][j])));
                     }else if(isMoveValid(i, j - 4)){
-                        result.add(new HoppersConfig(this, move(i, j, i, j - 4, true)));
+                        result.add(new HoppersConfig(move(i, j, i, j - 4, true, board[i][j])));
                     }else if(isMoveValid(i, j + 4)){
-                        result.add(new HoppersConfig(this, move(i, j, i, j + 4, true)));
+                        result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
                     }
                     //doing diagonal moves
-                }else if(board[i][j] == 'G'){
+                }else if(board[i][j] == 'G' || board[i][j] == 'R'){
                     if(isMoveValid(i - 2, j - 2)){
-                        result.add(new HoppersConfig(this, move(i, j, i - 2, j - 2, false)));
+                        result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
                     }else if(isMoveValid(i - 2, j + 2)){
-                        result.add(new HoppersConfig(this, move(i, j, i - 2, j + 2, false)));
+                        result.add(new HoppersConfig(move(i, j, i - 2, j + 2, false, board[i][j])));
                     }else if(isMoveValid(i + 2, j - 2)){
-                        result.add(new HoppersConfig(this, move(i, j, i + 2, j - 2, false)));
+                        result.add(new HoppersConfig(move(i, j, i + 2, j - 2, false, board[i][j])));
                     }else if(isMoveValid(i + 2, j + 2)){
-                        result.add(new HoppersConfig(this, move(i, j, i + 2, j + 2, false)));
+                        result.add(new HoppersConfig(move(i, j, i + 2, j + 2, false, board[i][j])));
                     }
                 }
             }
@@ -110,10 +105,10 @@ public class HoppersConfig implements Configuration{
         return result;
     }
 
-    private char[][] move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump){
+    private char[][] move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color){
         char[][] copyBoard = new char[row][col]; //creating a copy of the board from this config to move frogs
         System.arraycopy(board, 0, copyBoard, 0, row);
-        copyBoard[newRow][newCol] = 'G'; //moving the green frog
+        copyBoard[newRow][newCol] = color; //moving the frog
 
         //process deleting
         int deleteFrogRow = 0;
@@ -146,13 +141,8 @@ public class HoppersConfig implements Configuration{
                 deleteFrogRow = originalRow - 1;
                 deleteFrogCol = originalCol - 1;
             }
-        }
-        if(copyBoard[deleteFrogRow][deleteFrogCol] == 'G' || copyBoard[deleteFrogRow][deleteFrogCol] == 'R'
-        || copyBoard[deleteFrogRow][deleteFrogCol] == '.'){
-            copyBoard[deleteFrogRow][deleteFrogCol] = '.';
-        }else{
-            copyBoard[deleteFrogRow][deleteFrogCol] = '*';
-        }
+        }copyBoard[deleteFrogRow][deleteFrogCol] = '.';
+        copyBoard[originalRow][originalCol] = '.';
         return copyBoard;
     }
 
@@ -180,19 +170,24 @@ public class HoppersConfig implements Configuration{
     }
 
     /**
-     * the equal method compares the id of each config
+     * the equal method compares the game board of both config
      *
      * @param other - the HoppersConfig that needs to be compared
-     * @return true if two config are the same
+     * @return true if two configs' game board are the same
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = false;
         if(other instanceof HoppersConfig){
             HoppersConfig otherConfig = (HoppersConfig) other;
-            result = id.equals(otherConfig.id);
+            for(int i = 0; i < row; i ++){
+                for(int j = 0; j < col; j++){
+                    if (this.board[i][j] != otherConfig.board[i][j]) {
+                        return false;
+                    }
+                }
+            }
         }
-        return result;
+        return true;
     }
 
     /**
@@ -201,7 +196,15 @@ public class HoppersConfig implements Configuration{
      * @return hash code of config id
      */
     @Override
-    public int hashCode() { return id.hashCode(); }
+    public int hashCode(){
+        int result = 0;
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+                result += Character.hashCode(board[i][j]);
+            }
+        }
+        return result;
+    }
 
     /**
      * the to String method for the Hoppers configuration. It prints out the board
