@@ -101,7 +101,6 @@ public class AstroPTUI implements Observer<AstroModel, String> {
         }
     }
 
-
     /**
      * The main routine.
      *

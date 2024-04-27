@@ -175,7 +175,7 @@ public class AstroModel {
             Coordinates nextMove = findNextObstacle(selectedCoords, dir);
             if(isValidMove(nextMove)) {
                 currentConfig.moveSelected(selectedCoords, nextMove);
-                notifyObservers("Moved \"" + getContent(nextMove) + " from " + selectedCoords + " to " + nextMove);
+                notifyObservers("Moved \"" + getContent(nextMove) + "\" from " + selectedCoords + " to " + nextMove);
                 selectedCoords = nextMove;   // update the selected coordinates after the move
                 if(currentConfig.getCellValue(nextMove).equals(ASTRONAUT_SYMBOL) && nextMove.equals(currentConfig.getGoalCoords())) {
                     notifyObservers("Astronaut has reached the goal! Hooray!");
