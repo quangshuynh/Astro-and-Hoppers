@@ -66,57 +66,41 @@ public class AstroPTUI implements Observer<AstroModel, String> {
             String line = in.nextLine();
             String[] words = line.split( "\\s+" );
             if (words.length > 0) {
-                if (words[0].startsWith( "q" )) {
+                if (words[0].startsWith("q")) {  // quit
+                    model.quit();
                     break;
-                } else if(words[0].startsWith("r")) {
+                } else if(words[0].startsWith("r")) {  // reset
                     model.resetPuzzle();
-                } else if(words[0].startsWith("l")) {
+                } else if(words[0].startsWith("l")) {  // load
                     model.loadPuzzle(filename);
-                } else if(words[0].startsWith("m")) {
-                    String[] dir = in.nextLine().split(" ");
-                    move(dir);
-                }
-                else {
+                } else if(words[0].startsWith("m")) {  // make move
+                    switch(words[1]) {
+                        case "n" -> model.makeMove(Direction.NORTH);
+                        case "s" -> model.makeMove(Direction.SOUTH);
+                        case "e" -> model.makeMove(Direction.EAST);
+                        case "w" -> model.makeMove(Direction.WEST);
+                        default -> {
+                            System.out.println("Invalid direction!");
+                            displayHelp();
+                        }
+                    }
+                } else if(words[0].startsWith("h")) {  // hint
+                    model.getHint();
+                } else if(words[0].startsWith("s")) {
+                    try {
+                        int row = Integer.parseInt(words[1]);
+                        int col = Integer.parseInt(words[2]);
+                        this.model.select_status(row, col);
+                    } catch(Exception ignored) {
+                        //
+                    }
+                } else {
                     displayHelp();
                 }
             }
         }
     }
 
-    /**
-     * Moves selected piece to a location (coordinates, direction)
-     *
-     * @param command command
-     */
-    private void move(String[] command) {
-        if(model == null){
-            System.out.println("No active game. Use new or reset command");
-            return;
-        }
-        if(command.length != 4){
-            System.err.println("Invalid  move");
-            return;
-        }
-        int row = Integer.parseInt(command[1]);
-        int col = Integer.parseInt(command[2]);
-        String dir = command[3];
-
-        Direction direction = Direction.NORTH;
-        if(dir.equals("n")){
-            direction = Direction.NORTH;
-        }else if (dir.equals("s")){
-            direction = Direction.SOUTH;
-        }else if (dir.equals("e")){
-            direction = Direction.EAST;
-        }else if (dir.equals("w")){
-            direction = Direction.WEST;
-        }
-//        if(model.getGameState() == GameState.WON || board.getGameState() == GameState.NO_MOVES){
-//            System.out.println("Game is completed. Reset or start new game");
-//            return;
-//        }
-        model.makeMove(direction);
-    }
 
     /**
      * The main routine.

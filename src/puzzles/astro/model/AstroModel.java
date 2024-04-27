@@ -156,7 +156,7 @@ public class AstroModel {
         if(content.equals("A") || content.equals("B") || content.equals("C") ||
                 content.equals("D") || content.equals("E") || content.equals("F") ||
                 content.equals("G") || content.equals("H") || content.equals("I")) {
-            notifyObservers("Selected (" + row + ", " + col + ")");
+            notifyObservers("Selected " + content + " at (" + row + ", " + col + ")");
             selectedCoords = new Coordinates(row, col);
         } else {  // no piece selected
             selectedCoords = null;
@@ -217,8 +217,6 @@ public class AstroModel {
         return null;
     }
 
-
-
     /**
      * Checks if the move is valid.
      *
@@ -229,6 +227,13 @@ public class AstroModel {
         if(coord == null) return false;
         String cellValue = currentConfig.getCellValue(coord);
         return cellValue.equals(EMPTY_SYMBOL) || cellValue.equals(EARTH_SYMBOL);
+    }
+
+    /**
+     * The method to quit window/game
+     */
+    public void quit(){
+        System.exit(0);
     }
 
 
