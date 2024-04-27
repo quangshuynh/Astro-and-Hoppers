@@ -41,7 +41,9 @@ public class AstroPTUI implements Observer<AstroModel, String> {
     public void update(AstroModel model, String data) {
         // for demonstration purposes
         System.out.println(data);
-        System.out.println(model.toString());
+        if(!(filename == null)) {
+            System.out.println(model.toString());
+        }
     }
 
     /**
@@ -74,7 +76,8 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                 } else if(words[0].startsWith("l")) {  // load
                     model.loadPuzzle(words[1]);
                 } else if(words[0].startsWith("m")) {  // make move
-                    switch(words[1]) {
+                    filename = words[1];
+                    switch(filename) {
                         case "n" -> model.makeMove(Direction.NORTH);
                         case "s" -> model.makeMove(Direction.SOUTH);
                         case "e" -> model.makeMove(Direction.EAST);
@@ -97,6 +100,8 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                 } else {
                     displayHelp();
                 }
+            } else {
+                displayHelp();
             }
         }
     }
