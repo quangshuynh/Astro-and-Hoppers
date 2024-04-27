@@ -285,7 +285,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         if(selectedLabel != null) {
             selectedLabel.setStyle("-fx-border-width: 0;");
         }
-        model.select_status(row, col);  // notify observer
+        model.select(row, col);  // notify observer & select
         selectedLabel = clicked;
         clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");  // border doesnt work anymore?
     }

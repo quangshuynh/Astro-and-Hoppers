@@ -151,7 +151,7 @@ public class AstroModel {
      * @param row row selected
      * @param col colummn selected
      */
-    public void select_status(int row, int col) {
+    public void select(int row, int col) {
         String content = getContent(new Coordinates(row, col));
         if(content.equals("A") || content.equals("B") || content.equals("C") ||
                 content.equals("D") || content.equals("E") || content.equals("F") ||

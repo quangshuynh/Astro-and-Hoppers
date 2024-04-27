@@ -90,7 +90,7 @@ public class AstroPTUI implements Observer<AstroModel, String> {
                     try {
                         int row = Integer.parseInt(words[1]);
                         int col = Integer.parseInt(words[2]);
-                        this.model.select_status(row, col);
+                        this.model.select(row, col);
                     } catch(Exception ignored) {
                         //
                     }
