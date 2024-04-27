@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -169,9 +171,57 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         this.stage = stage;
         this.stage.setScene(scene);
         this.stage.setTitle("AstroGUI");
+
+        /** Keybinds */
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {  // keybinds
+            if(!model.getCurrentConfig().isSolution()) {  // arrows only work if game is not over
+                switch(event.getCode()) {
+                    case UP, W:  // up arrow
+                        model.makeMove(Direction.NORTH);
+                        break;
+                    case DOWN, S:  // down arrow
+                        model.makeMove(Direction.SOUTH);
+                        break;
+                    case LEFT, A:  // left arrow
+                        model.makeMove(Direction.WEST);
+                        break;
+                    case RIGHT, D:  // right arrow
+                        model.makeMove(Direction.EAST);
+                        break;
+                    case SPACE:  // new game
+                        File file = fileChooser.showOpenDialog(stage);
+                        if(file != null) {
+                            File astroFile = new File(file.getPath());
+                            String astroFilename = astroFile.getName();
+                            filename = astroFilename;
+                            this.model.loadPuzzle(astroFilename);
+                        }
+                        break;
+                    case R: // reset
+                        model.resetPuzzle();
+                        break;
+                    case H:
+                        model.getHint();
+                        break;
+                }
+            } else {  // when game is over
+                if(event.getCode() == KeyCode.SPACE) {
+                    File file = fileChooser.showOpenDialog(stage);
+                    if(file != null) {
+                        File astroFile = new File(file.getPath());
+                        String astroFilename = astroFile.getName();
+                        filename = astroFilename;
+                        this.model.loadPuzzle(astroFilename);
+                    }
+                } else if(event.getCode() == KeyCode.R) {
+                    model.resetPuzzle();
+                }
+            }
+        });
         this.stage.show();
         update(model, "");
         model.notifyLoad(filename);
+        main.requestFocus();
     }
 
     /**

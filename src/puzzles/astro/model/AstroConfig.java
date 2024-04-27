@@ -162,36 +162,36 @@ public class AstroConfig implements Configuration{
      * @param direction cardinal direction (n, s, e, w)
      */
     private void checkAndAddNeighbor(int row, int col, Direction direction) {
-        int dRow = 0;
-        int dCol = 0;
+        int cursorRow = 0;
+        int cursorCol = 0;
         switch (direction) {
             case NORTH:
-                dRow = -1;
+                cursorRow = -1;
                 break;
             case SOUTH:
-                dRow = 1;
+                cursorRow = 1;
                 break;
             case EAST:
-                dCol = 1;
+                cursorCol = 1;
                 break;
             case WEST:
-                dCol = -1;
+                cursorCol = -1;
                 break;
         }
-        int nextRow = row + dRow;
-        int nextCol = col + dCol;
+        int nextRow = row + cursorRow;
+        int nextCol = col + cursorCol;
         boolean foundPiece = false;
         while(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols) {  // continue until boundary
             if(!grid[nextRow][nextCol].equals(".")) {  // continue until piece is found
                 foundPiece = true;
                 break;
             }
-            nextRow += dRow;
-            nextCol += dCol;
+            nextRow += cursorRow;
+            nextCol += cursorCol;
         }
         if(foundPiece && !(nextRow == goalCoords.row() && nextCol == goalCoords.col())) {  // move one tile less
-            nextRow -= dRow;
-            nextCol -= dCol;
+            nextRow -= cursorRow;
+            nextCol -= cursorCol;
         }
         if(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols && !(nextRow == row && nextCol == col)) {
             if(grid[nextRow][nextCol].equals(".") || (nextRow == goalCoords.row() && nextCol == goalCoords.col())) {
@@ -280,5 +280,13 @@ public class AstroConfig implements Configuration{
         String selectedCellValue = grid[selectedCoords.row()][selectedCoords.col()];
         grid[selectedCoords.row()][selectedCoords.col()] = ".";
         grid[newCoords.row()][newCoords.col()] = selectedCellValue;
+    }
+
+    /**
+     * Get goal coordinates
+     * @return goal coordinates
+     */
+    public Coordinates getGoalCoords() {
+        return goalCoords;
     }
 }

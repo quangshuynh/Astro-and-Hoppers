@@ -170,34 +170,54 @@ public class AstroModel {
      *
      * @param dir direction (n, s, e, w)
      */
-    public void makeMove(Direction dir){
-        if(!(selectedCoords == null)) {
-            Coordinates moveCoord = null; // Coordinates for the move
-            switch(dir) {
-                case NORTH:
-                    moveCoord = new Coordinates(selectedCoords.row() - 1, selectedCoords.col());
-                    break;
-                case SOUTH:
-                    moveCoord = new Coordinates(selectedCoords.row() + 1, selectedCoords.col());
-                    break;
-                case EAST:
-                    moveCoord = new Coordinates(selectedCoords.row(), selectedCoords.col() + 1);
-                    break;
-                case WEST:
-                    moveCoord = new Coordinates(selectedCoords.row(), selectedCoords.col() - 1);
-                    break;
-            }
-            if(isValidMove(moveCoord)) {
-                currentConfig.moveSelected(selectedCoords, moveCoord);
-                notifyObservers("Moved astronaut from " + selectedCoords + " to " + moveCoord);
+    public void makeMove(Direction dir) {
+        if(selectedCoords != null) {
+            Coordinates nextMove = findNextObstacle(selectedCoords, dir);
+            if(isValidMove(nextMove)) {
+                currentConfig.moveSelected(selectedCoords, nextMove);
+                notifyObservers("Moved from " + selectedCoords + " to " + nextMove);
+                selectedCoords = nextMove;   // update the selected coordinates after the move
+                if(currentConfig.getCellValue(nextMove).equals(ASTRONAUT_SYMBOL) && nextMove.equals(currentConfig.getGoalCoords())) {
+                    notifyObservers("Astronaut has reached the goal! Hooray!");
+                }
             } else {
-                notifyObservers("Invalid move!");
+                notifyObservers("Can't move piece at " + selectedCoords + " " + dir);
             }
-        }
-        else {
+        } else {
             notifyObservers("Nothing selected to move!");
         }
     }
+
+    /**
+     * Helper method to move and find obstacles
+     *
+     * @param start starting coordinates (row, col)
+     * @param dir cardinal direction (n, s, e, w)
+     * @return coordinates to move
+     */
+    private Coordinates findNextObstacle(Coordinates start, Direction dir) {
+        int cursorRow = 0;
+        int cursorCol = 0;
+        switch(dir) {
+            case NORTH -> cursorRow = -1;
+            case SOUTH -> cursorRow = 1;
+            case EAST -> cursorCol = 1;
+            case WEST -> cursorCol = -1;
+        }
+        int newRow = start.row() + cursorRow;
+        int newCol = start.col() + cursorCol;
+        while(newRow >= 0 && newRow < getRow() && newCol >= 0 && newCol < getCol()) {
+            String cellContent = currentConfig.getCellValue(new Coordinates(newRow, newCol));
+            if(!cellContent.equals(EMPTY_SYMBOL) && !cellContent.equals(EARTH_SYMBOL)) {  // Stop before the obstacle or goal
+                return new Coordinates(newRow - cursorRow, newCol - cursorCol);
+            }
+            newRow += cursorRow;
+            newCol += cursorCol;
+        }
+        return null;
+    }
+
+
 
     /**
      * Checks if the move is valid.
@@ -206,10 +226,11 @@ public class AstroModel {
      * @return whether a move is valid or not
      */
     private boolean isValidMove(Coordinates coord) {
+        if(coord == null) return false;
         String cellValue = currentConfig.getCellValue(coord);
         return cellValue.equals(EMPTY_SYMBOL) || cellValue.equals(EARTH_SYMBOL);
-        //todo sliding, only can move towards another piece
     }
+
 
     /**
      * Displays model grid
