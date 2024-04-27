@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The model for the Astro puzzle
@@ -153,9 +154,8 @@ public class AstroModel {
      */
     public void select(int row, int col) {
         String content = getContent(new Coordinates(row, col));
-        if(content.equals("A") || content.equals("B") || content.equals("C") ||
-                content.equals("D") || content.equals("E") || content.equals("F") ||
-                content.equals("G") || content.equals("H") || content.equals("I")) {
+        Set<String> validContents = Set.of("A", "B", "C", "D", "E", "F", "G", "H", "I");
+        if(validContents.contains(content)) {
             notifyObservers("Selected " + content + " at (" + row + ", " + col + ")");
             selectedCoords = new Coordinates(row, col);
         } else {  // no piece selected
@@ -175,7 +175,7 @@ public class AstroModel {
             Coordinates nextMove = findNextObstacle(selectedCoords, dir);
             if(isValidMove(nextMove)) {
                 currentConfig.moveSelected(selectedCoords, nextMove);
-                notifyObservers("Moved from " + selectedCoords + " to " + nextMove);
+                notifyObservers("Moved \"" + getContent(nextMove) + "\" from " + selectedCoords + " to " + nextMove);
                 selectedCoords = nextMove;   // update the selected coordinates after the move
                 if(currentConfig.getCellValue(nextMove).equals(ASTRONAUT_SYMBOL) && nextMove.equals(currentConfig.getGoalCoords())) {
                     notifyObservers("Astronaut has reached the goal! Hooray!");
