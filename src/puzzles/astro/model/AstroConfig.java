@@ -270,4 +270,15 @@ public class AstroConfig implements Configuration{
         int col = coord.col();
         return grid[row][col];
     }
+
+    /**
+     * Moves the astronaut to the specified coordinates.
+     *
+     * @param newCoords the new coordinates of the astronaut
+     */
+    public void moveSelected(Coordinates selectedCoords, Coordinates newCoords) {
+        String selectedCellValue = grid[selectedCoords.row()][selectedCoords.col()];
+        grid[selectedCoords.row()][selectedCoords.col()] = ".";
+        grid[newCoords.row()][newCoords.col()] = selectedCellValue;
+    }
 }

@@ -24,13 +24,12 @@ public class AstroModel {
     public String EMPTY_SYMBOL = ".";  // empty cell
     public String ASTRONAUT_SYMBOL = "A";
     private String filename;  // filename
-    private Coordinates selectedPieceCoordinates;
+    private Coordinates selectedCoords;  // selected tile coords
     /** the collection of observers of this model */
     private final List<Observer<AstroModel, String>> observers = new LinkedList<>();
 
     /** the current configuration */
     private AstroConfig currentConfig;
-    private Piece piece = null;
 
     /**
      * The view calls this to add itself as an observer.
@@ -106,7 +105,7 @@ public class AstroModel {
      */
     public void getHint() {
         Solver solver = new Solver();
-        List<Configuration>path=solver.solve(currentConfig);
+        List<Configuration>path = solver.solve(currentConfig);
         if(path.size() == 1) {
             notifyObservers("Already solved!");
             return;
@@ -146,16 +145,6 @@ public class AstroModel {
     }
 
     /**
-     * Make move
-     * Can only make move towards another piece
-     *
-     * @param dir direction (n, s, e, w)
-     */
-    public void makeMove(Direction dir){
-        //
-    }
-
-    /**
      * Updates status to selected tile
      * Only can select astronaut or robots
      *
@@ -167,11 +156,59 @@ public class AstroModel {
         if(content.equals("A") || content.equals("B") || content.equals("C") ||
                 content.equals("D") || content.equals("E") || content.equals("F") ||
                 content.equals("G") || content.equals("H") || content.equals("I")) {
-            selectedPieceCoordinates = new Coordinates(row, col);
             notifyObservers("Selected (" + row + ", " + col + ")");
+            selectedCoords = new Coordinates(row, col);
         } else {  // no piece selected
+            selectedCoords = null;
             notifyObservers("No piece at (" + row + ", " + col + ")");
         }
+    }
+
+    /**
+     * Make move
+     * Can only make move towards another piece
+     *
+     * @param dir direction (n, s, e, w)
+     */
+    public void makeMove(Direction dir){
+        if(!(selectedCoords == null)) {
+            Coordinates moveCoord = null; // Coordinates for the move
+            switch(dir) {
+                case NORTH:
+                    moveCoord = new Coordinates(selectedCoords.row() - 1, selectedCoords.col());
+                    break;
+                case SOUTH:
+                    moveCoord = new Coordinates(selectedCoords.row() + 1, selectedCoords.col());
+                    break;
+                case EAST:
+                    moveCoord = new Coordinates(selectedCoords.row(), selectedCoords.col() + 1);
+                    break;
+                case WEST:
+                    moveCoord = new Coordinates(selectedCoords.row(), selectedCoords.col() - 1);
+                    break;
+            }
+            if(isValidMove(moveCoord)) {
+                currentConfig.moveSelected(selectedCoords, moveCoord);
+                notifyObservers("Moved astronaut from " + selectedCoords + " to " + moveCoord);
+            } else {
+                notifyObservers("Invalid move!");
+            }
+        }
+        else {
+            notifyObservers("Nothing selected to move!");
+        }
+    }
+
+    /**
+     * Checks if the move is valid.
+     *
+     * @param coord the coordinates of the target cell
+     * @return whether a move is valid or not
+     */
+    private boolean isValidMove(Coordinates coord) {
+        String cellValue = currentConfig.getCellValue(coord);
+        return cellValue.equals(EMPTY_SYMBOL) || cellValue.equals(EARTH_SYMBOL);
+        //todo sliding, only can move towards another piece
     }
 
     /**

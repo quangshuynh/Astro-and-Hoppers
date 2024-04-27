@@ -15,7 +15,6 @@ import puzzles.common.Coordinates;
 import puzzles.common.Direction;
 import puzzles.common.Observer;
 import puzzles.common.solver.Move;
-import puzzles.hoppers.model.HoppersModel;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -234,7 +233,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
      */
     private void select(Label clicked, int row, int col) {
         if(selectedLabel != null) {
-            selectedLabel.setStyle("");
+            selectedLabel.setStyle("-fx-border-width: 0;");
         }
         model.select_status(row, col);  // notify observer
         selectedLabel = clicked;
