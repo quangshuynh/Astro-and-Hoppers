@@ -9,6 +9,7 @@ import puzzles.common.solver.Solver;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -32,6 +33,7 @@ public class HoppersModel {
     }
     private String filename; // filename
     private GameStatus gameStatus; //the game's current state
+    private Coordinates selectedCoords;
 
     /**
      * The view calls this to add itself as an observer.
@@ -139,6 +141,13 @@ public class HoppersModel {
     }
 
     /**
+     * The method to quit window/game
+     */
+    public void quit(){
+        System.exit(0);
+    }
+
+    /**
      * Displays model grid
      *
      * @return string representation of astro game grid
@@ -163,5 +172,33 @@ public class HoppersModel {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Notify loading file on start
+     *
+     * @param file filename
+     */
+    public void notifyLoad(String file) {
+        notifyObservers("Loaded " + file);
+    }
+
+    /**
+     * Updates status to selected tile
+     * Only can select astronaut or robots
+     *
+     * @param row row selected
+     * @param col colummn selected
+     */
+    public void select(int row, int col) {
+        char content = currentConfig.getCellValue(new Coordinates(row, col));
+        Set<Character> validContents = Set.of('R', 'G');
+        if(validContents.contains(content)) {
+            notifyObservers("Selected \"" + content + "\" at (" + row + ", " + col + ")");
+            selectedCoords = new Coordinates(row, col);
+        } else {  // no piece selected
+            selectedCoords = null;
+            notifyObservers("No piece at (" + row + ", " + col + ")");
+        }
     }
 }

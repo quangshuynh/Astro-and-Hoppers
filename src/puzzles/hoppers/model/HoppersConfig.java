@@ -1,5 +1,6 @@
 package puzzles.hoppers.model;
 
+import puzzles.common.Coordinates;
 import puzzles.common.solver.Configuration;
 
 import java.io.BufferedReader;
@@ -235,9 +236,13 @@ public class HoppersConfig implements Configuration{
     }
 
     /**
-     * The method to quit window/game
+     * Get cell value
+     *
+     * @return cell value at coordinates
      */
-    public void quit(){
-        System.exit(0);
+    public char getCellValue(Coordinates coord) {
+        int row = coord.row();
+        int col = coord.col();
+        return board[row][col];
     }
 }

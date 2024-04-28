@@ -43,7 +43,6 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
-    // for demonstration purposes
     /** Images */
     private final Image astronaut = getResourceIMG("astro.png");
     private final Image earthGoal = getResourceIMG("earth.png");
@@ -170,7 +169,7 @@ public class AstroGUI extends Application implements Observer<AstroModel, String
         Scene scene = new Scene(main);
         this.stage = stage;
         this.stage.setScene(scene);
-        this.stage.setTitle("AstroGUI");
+        this.stage.setTitle("Astro GUI");
 
         /** Keybinds */
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {  // keybinds
