@@ -13,10 +13,10 @@ import java.util.HashSet;
  *
  * @author Kai Fan
  */
-public class HoppersConfig implements Configuration{
+public class HoppersConfig implements Configuration{ //todo hopper config is f***ed skip to work on MVC
     private char[][] board; //the board of the game
-    public static int row; //the number of row start from 1
-    public static int col; //the number of col start from 1
+    private static int row; //the number of row start from 1
+    private static int col; //the number of col start from 1
 
     /**
      * the main constructor of the HoppersConfig
@@ -54,15 +54,18 @@ public class HoppersConfig implements Configuration{
      * @return true if only red frog is left
      */
     @Override
-    public boolean isSolution() {
+    public boolean isSolution() { //todo sus
+        boolean solution = false;
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(board[i][j] == 'G'){
-                    return false;
+                if(board[i][j] == 'R'){
+                    solution = true;
+                }else if(board[i][j] == 'G'){
+                    solution = false;
                 }
             }
         }
-        return true;
+        return solution;
     }
 
     /**
@@ -77,20 +80,20 @@ public class HoppersConfig implements Configuration{
         //go through the frogs and move them, each move generate a new config
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(i % 2 == 0 && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a green frog
-                    //doing vertical and horizontal moves
-                    if(isMoveValid(i - 4, j)){
-                        result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
-                    }else if(isMoveValid(i + 4, j)){
-                        result.add(new HoppersConfig(move(i, j, i + 4, j, true, board[i][j])));
-                    }else if(isMoveValid(i, j - 4)){
-                        result.add(new HoppersConfig(move(i, j, i, j - 4, true, board[i][j])));
-                    }else if(isMoveValid(i, j + 4)){
-                        result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
-                    }
-                    //doing diagonal moves
-                }else if(board[i][j] == 'G' || board[i][j] == 'R'){
-                    if(isMoveValid(i - 2, j - 2)){
+                if(board[i][j] == 'G' || board[i][j] == 'R') {
+                    if(i % 2 == 0){ //if even row and is a frog
+                        //doing vertical and horizontal moves (aka generating new configs)
+                        if (isMoveValid(i - 4, j)) {
+                            result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
+                        } else if (isMoveValid(i + 4, j)) {
+                            result.add(new HoppersConfig(move(i, j, i + 4, j, true, board[i][j])));
+                        } else if (isMoveValid(i, j - 4)) {
+                            result.add(new HoppersConfig(move(i, j, i, j - 4, true, board[i][j])));
+                        } else if (isMoveValid(i, j + 4)) {
+                            result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
+                        }
+                        //doing diagonal moves
+                    }if(isMoveValid(i - 2, j - 2)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
                     }else if(isMoveValid(i - 2, j + 2)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j + 2, false, board[i][j])));
@@ -108,6 +111,7 @@ public class HoppersConfig implements Configuration{
     private char[][] move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color){
         char[][] copyBoard = new char[row][col]; //creating a copy of the board from this config to move frogs
         System.arraycopy(board, 0, copyBoard, 0, row);
+
         copyBoard[newRow][newCol] = color; //moving the frog
 
         //process deleting
@@ -141,7 +145,10 @@ public class HoppersConfig implements Configuration{
                 deleteFrogRow = originalRow - 1;
                 deleteFrogCol = originalCol - 1;
             }
-        }copyBoard[deleteFrogRow][deleteFrogCol] = '.';
+        }
+        if(copyBoard[deleteFrogRow][deleteFrogCol] != '*'){
+            copyBoard[deleteFrogRow][deleteFrogCol] = '.';
+        }
         copyBoard[originalRow][originalCol] = '.';
         return copyBoard;
     }
@@ -155,15 +162,15 @@ public class HoppersConfig implements Configuration{
      */
     private boolean isMoveValid(int newRow, int newCol){
         boolean result = true;
-        if(newRow > row - 1){
+        if(newRow >= row){
             result = false;
         }else if(newRow < 0){
             result = false;
-        }else if(newCol > col - 1){
+        }else if(newCol >= col){
             result = false;
         }else if(newCol < 0){
             result = false;
-        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R'){
+        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R' || board[newRow][newCol] == '*'){
             result = false;
         }
         return result;
