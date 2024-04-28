@@ -88,8 +88,8 @@ public class AstroModel {
     }
 
     /**
-     * Loads a new puzzle configuration from a file.
-     * @param filename The file name to load the puzzle from.
+     * Loads a new puzzle configuration from a file
+     * @param filename The file name to load the puzzle from
      */
     public void loadPuzzle(String filename) {
         try {
@@ -123,7 +123,7 @@ public class AstroModel {
     }
 
     /**
-     * Resets the puzzle to the initial configuration based on the current file.
+     * Resets the puzzle to the initial configuration based on the current file
      */
     public void resetPuzzle() {
         loadPuzzle(filename);

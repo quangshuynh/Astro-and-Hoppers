@@ -19,14 +19,14 @@ import static puzzles.common.Direction.*;
  */
 
 public class AstroConfig implements Configuration{
-    public String[][] grid;
-    private Coordinates astroCoords;
-    private Coordinates goalCoords;
-    public int rows;
-    public int cols;
-    private Collection<Configuration> neighbors;
-    private Set<Piece> totalPieces;
-    private Piece astronaut;
+    public String[][] grid;  // game grid
+    private Coordinates astroCoords;  // astronaut coordinates
+    private Coordinates goalCoords;  // goal coordinates
+    public int rows;  // rows of grid
+    public int cols;  // columns of grid
+    private Collection<Configuration> neighbors;  // neighbors collection
+    private Set<Piece> totalPieces;  // set containing all pieces (astronaut & robots)
+    private Piece astronaut;  // astronaut piece (symbol, coordinates)
 
     /**
      * Construct new AstroConfig
@@ -164,7 +164,7 @@ public class AstroConfig implements Configuration{
     private void checkAndAddNeighbor(int row, int col, Direction direction) {
         int cursorRow = 0;
         int cursorCol = 0;
-        switch (direction) {
+        switch(direction) {
             case NORTH:
                 cursorRow = -1;
                 break;
