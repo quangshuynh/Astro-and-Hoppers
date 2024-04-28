@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Astro astro-0.txt" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/.jdks/liberica-full-22.0.1" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="puzzles.astro.solver.Astro" />
     <module name="AstroHoppers" />
     <option name="PROGRAM_PARAMETERS" value="astro-0.txt" />
