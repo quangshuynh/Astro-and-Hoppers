@@ -78,7 +78,7 @@ public class HoppersConfig implements Configuration{
         //go through the frogs and move them, each move generate a new config
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(i % 2 == 0 && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a green frog
+                if(i % 2 == 0 && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a frog
                     //doing vertical and horizontal moves
                     if(isMoveValid(i - 4, j)){
                         result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
@@ -89,7 +89,7 @@ public class HoppersConfig implements Configuration{
                     }else if(isMoveValid(i, j + 4)){
                         result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
                     }
-                    //doing diagonal moves
+                    //doing diagonal moves if is a frog
                 }else if(board[i][j] == 'G' || board[i][j] == 'R'){
                     if(isMoveValid(i - 2, j - 2)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
@@ -214,29 +214,34 @@ public class HoppersConfig implements Configuration{
      */
     @Override
     public String toString() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                result += board[i][j] + " ";
+                result.append(board[i][j]).append(" ");
             }
-            result = result.substring(0, result.length() - 1);
-            result += "\n";
+            if(result.length() > 0) {
+                result.setLength(result.length() - 1);  // remove trailing space only if result is not empty
+            }
+            result.append("\n");
         }
-        result = result.substring(0, result.length() - 1);
-        return result;
+        if(result.length() > 0) {
+            result.setLength(result.length() - 1);  // remove trailing newline only if result is not empty
+        }
+        return result.toString();
     }
 
     /**
-     * Returns matrix
+     * Returns the game board
      *
-     * @return return grid matrix of astro
+     * @return the board of the game
      */
     public char[][] getBoard() {
-        return board;
+        return this.board;
     }
 
     /**
-     * Get cell value
+     * Get the value of a cell
+     * This method is used by the MVC model
      *
      * @return cell value at coordinates
      */

@@ -21,7 +21,7 @@ public class Hoppers {
             System.out.println("Unique configs: " + solver.getUniqueConfigs());
             if(result != null && !result.isEmpty()) {  // print steps
                 for(int stepNum = 0; stepNum < result.size(); stepNum++) {
-                    System.out.println("Step " + stepNum + ": \n" + result.get(stepNum) + "\n");
+                    System.out.println("Step " + stepNum + ": \n" + result.get(stepNum).toString() + "\n");
                 }
             } else {
                 System.out.println("No solution");
