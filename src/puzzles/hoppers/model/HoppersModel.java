@@ -13,6 +13,17 @@ public class HoppersModel {
 
     /** the current configuration */
     private HoppersConfig currentConfig;
+    //Enumeration for representing the different states of the game
+    private enum GameStatus {
+        READY, // initial state
+        ONGOING, // game in progress
+        LOST,
+        WON
+    }
+    public static int row; //the row
+    public static int col; //the col
+    private char[][] board; //the game board
+    private GameStatus gameStatus; //the game's current state
 
     /**
      * The view calls this to add itself as an observer.
@@ -34,5 +45,7 @@ public class HoppersModel {
     }
 
     public HoppersModel(String filename) throws IOException {
+        row = 0; //todo delete, here now to make sure HoppersModel compile
+        col = 0; //todo delete
     }
 }

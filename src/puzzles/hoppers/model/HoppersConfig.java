@@ -5,8 +5,10 @@ import puzzles.common.solver.Configuration;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * The configuration class for the board game Hoppers, used to work with common BFS solver
@@ -54,18 +56,18 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
      * @return true if only red frog is left
      */
     @Override
-    public boolean isSolution() { //todo sus
-        boolean solution = false;
+    public boolean isSolution() { //todo returning true when it isn't suppose to for test 1, and for the rest, it stuck in infinite loop
+        boolean result = false;
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(board[i][j] == 'R'){
-                    solution = true;
-                }else if(board[i][j] == 'G'){
-                    solution = false;
+                if(this.board[i][j] == 'R'){
+                    result = true;
+                }else if(this.board[i][j] == 'G'){
+                    result = false;
                 }
             }
         }
-        return solution;
+        return result;
     }
 
     /**
@@ -83,23 +85,23 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
                 if(board[i][j] == 'G' || board[i][j] == 'R') {
                     if(i % 2 == 0){ //if even row and is a frog
                         //doing vertical and horizontal moves (aka generating new configs)
-                        if (isMoveValid(i - 4, j)) {
+                        if (isMoveValid(i ,j, i - 4, j, true)) {
                             result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
-                        } else if (isMoveValid(i + 4, j)) {
+                        } else if (isMoveValid(i, j, i + 4, j, true)) {
                             result.add(new HoppersConfig(move(i, j, i + 4, j, true, board[i][j])));
-                        } else if (isMoveValid(i, j - 4)) {
+                        } else if (isMoveValid(i, j, i, j - 4, true)) {
                             result.add(new HoppersConfig(move(i, j, i, j - 4, true, board[i][j])));
-                        } else if (isMoveValid(i, j + 4)) {
+                        } else if (isMoveValid(i, j, i, j + 4, true)) {
                             result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
                         }
-                        //doing diagonal moves
-                    }if(isMoveValid(i - 2, j - 2)){
+                        //doing diagonal moves (also generating new configs)
+                    }if(isMoveValid(i, j, i - 2, j - 2, false)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
-                    }else if(isMoveValid(i - 2, j + 2)){
+                    }else if(isMoveValid(i, j, i - 2, j + 2, false)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j + 2, false, board[i][j])));
-                    }else if(isMoveValid(i + 2, j - 2)){
+                    }else if(isMoveValid(i, j, i + 2, j - 2, false)){
                         result.add(new HoppersConfig(move(i, j, i + 2, j - 2, false, board[i][j])));
-                    }else if(isMoveValid(i + 2, j + 2)){
+                    }else if(isMoveValid(i, j, i + 2, j + 2, false)){
                         result.add(new HoppersConfig(move(i, j, i + 2, j + 2, false, board[i][j])));
                     }
                 }
@@ -114,7 +116,7 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
 
         copyBoard[newRow][newCol] = color; //moving the frog
 
-        //process deleting
+        //process deleting of the in between frog
         int deleteFrogRow = 0;
         int deleteFrogCol = 0;
         if(longJump){ //deleting even row
@@ -146,9 +148,8 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
                 deleteFrogCol = originalCol - 1;
             }
         }
-        if(copyBoard[deleteFrogRow][deleteFrogCol] != '*'){
-            copyBoard[deleteFrogRow][deleteFrogCol] = '.';
-        }
+        //make the jumped over frog space available, and the original place available
+        copyBoard[deleteFrogRow][deleteFrogCol] = '.';
         copyBoard[originalRow][originalCol] = '.';
         return copyBoard;
     }
@@ -156,24 +157,60 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
     /**
      * A method used in get neighbors to see if a move is valid
      *
+     * @param oldRow - the old row
+     * @param oldCol - the old col
      * @param newRow - the target row to move to
      * @param newCol - the target col to move to
      * @return if that targeted row, col is valid
      */
-    private boolean isMoveValid(int newRow, int newCol){
-        boolean result = true;
-        if(newRow >= row){
-            result = false;
-        }else if(newRow < 0){
-            result = false;
-        }else if(newCol >= col){
-            result = false;
-        }else if(newCol < 0){
-            result = false;
-        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R' || board[newRow][newCol] == '*'){
-            result = false;
+    private boolean isMoveValid(int oldRow, int oldCol, int newRow, int newCol, boolean longJump){
+        int detectInBetweenRow = 0;
+        int detectInBetweenCol = 0;
+        if(longJump){ //detect to make sure it is jumping over a frog
+            if(newRow > oldRow && newCol == oldCol){
+                detectInBetweenRow = oldRow + 2;
+                detectInBetweenCol = oldCol;
+            }else if(newRow < oldRow && newCol == oldCol){
+                detectInBetweenRow = oldRow - 2;
+                detectInBetweenCol = oldCol;
+            }else if(newCol > oldCol && newRow == oldRow){
+                detectInBetweenCol = oldCol + 2;
+                detectInBetweenRow = oldRow;
+            }else if(newCol < oldCol && newRow == oldRow){
+                detectInBetweenCol = oldCol - 2;
+                detectInBetweenRow = oldRow;
+            }
+        }else{
+            if(newRow > oldRow && newCol > oldCol){
+                detectInBetweenRow = oldRow + 1;
+                detectInBetweenCol = oldCol + 1;
+            }else if(newRow > oldRow && newCol < oldCol){
+                detectInBetweenRow = oldRow + 1;
+                detectInBetweenCol = oldCol - 1;
+            }else if(newRow < oldRow && newCol > oldCol){
+                detectInBetweenRow = oldRow - 1;
+                detectInBetweenCol = oldCol + 1;
+            }else if(newRow < oldRow && newCol < oldCol){
+                detectInBetweenRow = oldRow - 1;
+                detectInBetweenCol = oldCol - 1;
+            }
         }
-        return result;
+        //continue detecting to make sure the new place to move is not outside the game board
+        if(newRow >= row){
+            return false;
+        }else if(newRow < 0){
+            return false;
+        }else if(newCol >= col){
+            return false;
+        }else if(newCol < 0){
+            return false;
+        }
+        //detecting if the target location to move is valid
+        else if(board[newRow][newCol] != '.'){
+            return false;
+        }
+        //only allow jump when a frog is in between (video didn't tell if we are allow to jump without frog in between)
+        return board[detectInBetweenRow][detectInBetweenCol] == 'G';
     }
 
     /**
@@ -184,17 +221,12 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
      */
     @Override
     public boolean equals(Object other) {
+        boolean result = false;
         if(other instanceof HoppersConfig){
-            HoppersConfig otherConfig = (HoppersConfig) other;
-            for(int i = 0; i < row; i ++){
-                for(int j = 0; j < col; j++){
-                    if (this.board[i][j] != otherConfig.board[i][j]) {
-                        return false;
-                    }
-                }
-            }
+            HoppersConfig otherHoppers = (HoppersConfig) other;
+            result = Arrays.deepEquals(board, otherHoppers.board);
         }
-        return true;
+        return result;
     }
 
     /**
@@ -204,13 +236,7 @@ public class HoppersConfig implements Configuration{ //todo hopper config is f**
      */
     @Override
     public int hashCode(){
-        int result = 0;
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col; j++){
-                result += Character.hashCode(board[i][j]);
-            }
-        }
-        return result;
+        return Arrays.deepHashCode(board);
     }
 
     /**
