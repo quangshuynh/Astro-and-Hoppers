@@ -41,6 +41,8 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
                     break;
                 } else if(words[0].startsWith("l")) {  // load
                     model.load(words[1]);
+                } else if(words[0].startsWith("r")) {
+                    model.reset();
                 }
                 else {
                     displayHelp();
