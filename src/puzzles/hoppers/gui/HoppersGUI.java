@@ -38,7 +38,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private final Image redFrog = getResourceIMG("red_frog.png");
     private final Image greenFrog = getResourceIMG("green_frog.png");
     private final Image lilyPad = getResourceIMG("lily_pad.png");
-    private final Image water = getResourceIMG("water.png");
     private final BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/water.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
     private final Background background = new Background(backgroundImage);
 
@@ -63,8 +62,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         /** Game Grid (center) */
         game = new GridPane();  // game grid
         game.setPadding(new Insets(10, 10, 10, 10));  // set padding
-        game.setVgap(1);  // vertical gap inbetween tiles
-        game.setHgap(1);  // horizontal gap inbetween tiles
         for(int row = 0; row < model.getRow(); row++) {
             for(int col = 0; col < model.getCol(); col++) {
                 Label tile = new Label("");
@@ -130,7 +127,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
 
     @Override
     public void update(HoppersModel hoppersModel, String msg) {
-        game.getChildren().clear();  // clear all children after updating
+        game.getChildren().clear();
 
         /** Updating game grid */
         for(int row = 0; row < hoppersModel.getRow(); row++) {
@@ -177,7 +174,6 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
         model.select(row, col);  // notify observer & select
         selectedLabel = clicked;
-        clicked.setStyle("-fx-border-color: red; -fx-border-width: 2px;");  // border doesnt work anymore?
     }
 
     /**
