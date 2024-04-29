@@ -6,6 +6,7 @@ import puzzles.common.solver.Configuration;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -56,14 +57,17 @@ public class HoppersConfig implements Configuration{
      */
     @Override
     public boolean isSolution() {
+        boolean result = false;
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(board[i][j] == 'G'){
+                if(board[i][j] == 'R'){
+                    result = true;
+                }else if(board[i][j] == 'G'){
                     return false;
                 }
             }
         }
-        return true;
+        return result;
     }
 
     /**
@@ -78,26 +82,26 @@ public class HoppersConfig implements Configuration{
         //go through the frogs and move them, each move generate a new config
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(i % 2 == 0 && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a frog
+                if((i % 2 == 0 && j % 2 == 0) && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a frog
                     //doing vertical and horizontal moves
-                    if(isMoveValid(i - 4, j)){
+                    if(isMoveValid(i, j, i - 4, j, true)){
                         result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
-                    }else if(isMoveValid(i + 4, j)){
+                    }else if(isMoveValid(i, j, i + 4, j, true)){
                         result.add(new HoppersConfig(move(i, j, i + 4, j, true, board[i][j])));
-                    }else if(isMoveValid(i, j - 4)){
+                    }else if(isMoveValid(i, j, i, j - 4, true)){
                         result.add(new HoppersConfig(move(i, j, i, j - 4, true, board[i][j])));
-                    }else if(isMoveValid(i, j + 4)){
+                    }else if(isMoveValid(i, j, i, j + 4, true)){
                         result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
                     }
                     //doing diagonal moves if is a frog
-                }else if(board[i][j] == 'G' || board[i][j] == 'R'){
-                    if(isMoveValid(i - 2, j - 2)){
+                }if(board[i][j] == 'G' || board[i][j] == 'R'){ //This executes anyway regardless of even odd coordinate
+                    if(isMoveValid(i, j, i - 2, j - 2, false)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
-                    }else if(isMoveValid(i - 2, j + 2)){
+                    }else if(isMoveValid(i, j, i - 2, j + 2, false)){
                         result.add(new HoppersConfig(move(i, j, i - 2, j + 2, false, board[i][j])));
-                    }else if(isMoveValid(i + 2, j - 2)){
+                    }else if(isMoveValid(i, j, i + 2, j - 2, false)){
                         result.add(new HoppersConfig(move(i, j, i + 2, j - 2, false, board[i][j])));
-                    }else if(isMoveValid(i + 2, j + 2)){
+                    }else if(isMoveValid(i, j, i + 2, j + 2, false)){
                         result.add(new HoppersConfig(move(i, j, i + 2, j + 2, false, board[i][j])));
                     }
                 }
@@ -106,67 +110,127 @@ public class HoppersConfig implements Configuration{
         return result;
     }
 
+    /**
+     * The method used my getNeighbors to generate a new board with frogs moved
+     *
+     * @param originalRow - original row of the frog
+     * @param originalCol - original col of the frog
+     * @param newRow - target row to jump to
+     * @param newCol - target col to jump to
+     * @param longJump - if is even cell
+     * @param color - the color of the frog
+     * @return - a board with frogs moved
+     */
     private char[][] move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color){
-        char[][] copyBoard = new char[row][col]; //creating a copy of the board from this config to move frogs
-        System.arraycopy(board, 0, copyBoard, 0, row);
+        char[][] copyBoard = board; //creating a copy of the board from this config to move frogs
+
         copyBoard[newRow][newCol] = color; //moving the frog
 
         //process deleting
         int deleteFrogRow = 0;
         int deleteFrogCol = 0;
-        if(longJump){ //deleting even row
-            if(newRow > originalRow && newCol == originalCol){
+        if(longJump){ //deleting even row col
+            if(newRow == originalRow + 4 && newCol == originalCol){
                 deleteFrogRow = originalRow + 2;
                 deleteFrogCol = originalCol;
-            }else if(newRow < originalRow && newCol == originalCol){
+            }else if(newRow == originalRow - 4 && newCol == originalCol){
                 deleteFrogRow = originalRow - 2;
                 deleteFrogCol = originalCol;
-            }else if(newCol > originalCol && newRow == originalRow){
+            }else if(newCol == originalCol + 4 && newRow == originalRow){
                 deleteFrogCol = originalCol + 2;
                 deleteFrogRow = originalRow;
-            }else if(newCol < originalCol && newRow == originalRow){
+            }else if(newCol == originalCol - 4 && newRow == originalRow){
                 deleteFrogCol = originalCol - 2;
                 deleteFrogRow = originalRow;
             }
-        }else{
-            if(newRow > originalRow && newCol > originalCol){
+        }else{ //deleting odd row col
+            if(newRow == originalRow + 2 && newCol == originalCol + 2){
                 deleteFrogRow = originalRow + 1;
                 deleteFrogCol = originalCol + 1;
-            }else if(newRow > originalRow && newCol < originalCol){
+            }else if(newRow == originalRow + 2 && newCol == originalCol - 2){
                 deleteFrogRow = originalRow + 1;
                 deleteFrogCol = originalCol - 1;
-            }else if(newRow < originalRow && newCol > originalCol){
+            }else if(newRow == originalRow - 2 && newCol == originalCol + 2){
                 deleteFrogRow = originalRow - 1;
                 deleteFrogCol = originalCol + 1;
-            }else if(newRow < originalRow && newCol < originalCol){
+            }else if(newRow == originalRow - 2 && newCol == originalCol - 2){
                 deleteFrogRow = originalRow - 1;
                 deleteFrogCol = originalCol - 1;
             }
         }copyBoard[deleteFrogRow][deleteFrogCol] = '.';
-        copyBoard[originalRow][originalCol] = '.';
+        copyBoard[originalRow][originalCol] = '.'; //make the original position valid to jump again
         return copyBoard;
     }
 
     /**
-     * A method used in get neighbors to see if a move is valid
+     *  the method used to check if a move is valid
+     *  1. a move is valid if the targeted row and col are not outside the board
+     *  2. a move is valid if the targeted row and col are not into an invalid space i.e.'*'
+     *  3. a move is valid if the frog is indeed jumping over another green frog (Cannot be red frog)
      *
-     * @param newRow - the target row to move to
-     * @param newCol - the target col to move to
-     * @return if that targeted row, col is valid
+     * @param originalRow - the original row of the frog
+     * @param originalCol - the original col of the frog
+     * @param newRow - the targeted row the frog tries to jump to
+     * @param newCol - the targeted col the frog tries to jump to
+     * @param longJump - if even cell
+     * @return returns true grants the permission for frog to jump and not violate puzzle rule
      */
-    private boolean isMoveValid(int newRow, int newCol){
+    private boolean isMoveValid(int originalRow, int originalCol, int newRow, int newCol, boolean longJump){
+        //process for if out of bound (valid check 1 from Javadoc)
         boolean result = true;
         if(newRow > row - 1){
-            result = false;
+            return false;
         }else if(newRow < 0){
-            result = false;
+            return false;
         }else if(newCol > col - 1){
-            result = false;
+            return false;
         }else if(newCol < 0){
-            result = false;
-        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R'){
-            result = false;
+            return false;
+        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R' || board[newRow][newCol] == '*'){
+            return false;
         }
+
+        //check to see if targeted row col for the frog to jump is '*' (valid check 2 from Javadoc)
+        if(board[newRow][newCol] == '*'){
+            return false;
+        }
+
+        //Check to make sure the original frog is going to jump over a green frog (valid check 3 from javadoc)
+        int checkFrogRow = 0;
+        int checkFrogCol = 0;
+        if(longJump){ //get coordinate to check even row col
+            if(newRow == originalRow + 4 && newCol == originalCol){
+                checkFrogRow = originalRow + 2;
+                checkFrogCol = originalCol;
+            }else if(newRow == originalRow - 4 && newCol == originalCol){
+                checkFrogRow = originalRow - 2;
+                checkFrogCol = originalCol;
+            }else if(newCol == originalCol + 4 && newRow == originalRow){
+                checkFrogCol = originalCol + 2;
+                checkFrogRow = originalRow;
+            }else if(newCol == originalCol - 4 && newRow == originalRow){
+                checkFrogCol = originalCol - 2;
+                checkFrogRow = originalRow;
+            }
+        }else { //get coordinate to check odd row col
+            if (newRow == originalRow + 2 && newCol == originalCol + 2) {
+                checkFrogRow = originalRow + 1;
+                checkFrogCol = originalCol + 1;
+            } else if (newRow == originalRow + 2 && newCol == originalCol - 2) {
+                checkFrogRow = originalRow + 1;
+                checkFrogCol = originalCol - 1;
+            } else if (newRow == originalRow - 2 && newCol == originalCol + 2) {
+                checkFrogRow = originalRow - 1;
+                checkFrogCol = originalCol + 1;
+            } else if (newRow == originalRow - 2 && newCol == originalCol - 2) {
+                checkFrogRow = originalRow - 1;
+                checkFrogCol = originalCol - 1;
+            }
+        }
+        if(board[checkFrogRow][checkFrogCol] != 'G'){
+            return false;
+        }
+
         return result;
     }
 
@@ -232,6 +296,7 @@ public class HoppersConfig implements Configuration{
 
     /**
      * Returns the game board
+     * This method is used by the MVC model
      *
      * @return the board of the game
      */
