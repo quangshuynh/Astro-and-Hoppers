@@ -49,9 +49,9 @@ public class HoppersConfig implements Configuration{
     private HoppersConfig(HoppersConfig other){
         this.row = other.row;
         this.col = other.col;
-        this.board = new char[this.row][this.col];
+        this.board = new char[row][col];
         for(int i = 0; i < this.row; i++){
-            System.arraycopy(other.getBoard()[i], 0, this.board[i], 0, col);
+            System.arraycopy(other.board[i], 0, this.board[i], 0, col);
         }
     }
 
@@ -125,13 +125,13 @@ public class HoppersConfig implements Configuration{
      */
     private HoppersConfig move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color){
         HoppersConfig result = new HoppersConfig(this);
-        char[][] copyBoard = result.getBoard(); //creating a copy of the board from this config to move frogs
+        char[][] copyBoard = result.board; //creating a copy of the board from this config to move frogs
 
         copyBoard[newRow][newCol] = color; //moving the frog
 
         //process deleting
-        int deleteFrogRow = 0;
-        int deleteFrogCol = 0;
+        int deleteFrogRow = -1;
+        int deleteFrogCol = -1;
         if(longJump){ //deleting even row col
             if(newRow == originalRow + 4 && newCol == originalCol){
                 deleteFrogRow = originalRow + 2;
@@ -189,7 +189,7 @@ public class HoppersConfig implements Configuration{
             return false;
         }else if(newCol < 0){
             return false;
-        }else if(board[newRow][newCol] == 'G' || board[newRow][newCol] == 'R' || board[newRow][newCol] == '*'){
+        }else if(board[newRow][newCol] != '.'){
             return false;
         }
 

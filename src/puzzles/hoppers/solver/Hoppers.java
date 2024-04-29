@@ -19,7 +19,7 @@ public class Hoppers {
             List<Configuration> solution = solver.solve(hoppersConfig);
             System.out.println("Total configs: " + solver.getTotalConfigs());
             System.out.println("Unique configs: " + solver.getUniqueConfigs());
-            if(solution == null){
+            if(solution == null || solution.isEmpty()){
                 System.out.println("No solution");
             }else{
                 int counter = 0;
