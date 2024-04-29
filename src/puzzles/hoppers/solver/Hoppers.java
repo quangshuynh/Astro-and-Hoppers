@@ -13,18 +13,20 @@ public class Hoppers {
             System.out.println("Usage: java Hoppers filename");
         }else{
             System.out.println("File: data/hoppers/" + args[0]);
-            HoppersConfig start = new HoppersConfig(args[0]);
-            System.out.println(start);
+            HoppersConfig hoppersConfig = new HoppersConfig(args[0]);
+            System.out.println(hoppersConfig);
             Solver solver = new Solver();
-            List<Configuration> result = solver.solve(start);
+            List<Configuration> solution = solver.solve(hoppersConfig);
             System.out.println("Total configs: " + solver.getTotalConfigs());
             System.out.println("Unique configs: " + solver.getUniqueConfigs());
-            if(result != null && !result.isEmpty()) {  // print steps
-                for(int stepNum = 0; stepNum < result.size(); stepNum++) {
-                    System.out.println("Step " + stepNum + ": \n" + result.get(stepNum).toString() + "\n");
-                }
-            } else {
+            if(solution == null){
                 System.out.println("No solution");
+            }else{
+                int counter = 0;
+                for(Configuration hopperConfig : solution){
+                    System.out.println("Step " + counter + ":\n" + hopperConfig.toString() + "\n");
+                    counter++;
+                }
             }
         }
     }

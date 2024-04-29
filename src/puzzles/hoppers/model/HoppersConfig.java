@@ -44,10 +44,15 @@ public class HoppersConfig implements Configuration{
     /**
      * The copy constructor used to easily create another config
      *
-     * @param board - the new board
+     * @param other - the parent config
      */
-    private HoppersConfig(char[][]board){
-        this.board = board;
+    private HoppersConfig(HoppersConfig other){
+        this.row = other.row;
+        this.col = other.col;
+        this.board = new char[this.row][this.col];
+        for(int i = 0; i < this.row; i++){
+            System.arraycopy(other.getBoard()[i], 0, this.board[i], 0, col);
+        }
     }
 
     /**
@@ -57,17 +62,14 @@ public class HoppersConfig implements Configuration{
      */
     @Override
     public boolean isSolution() {
-        boolean result = false;
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if(board[i][j] == 'R'){
-                    result = true;
-                }else if(board[i][j] == 'G'){
+                if(board[i][j] == 'G'){
                     return false;
                 }
             }
         }
-        return result;
+        return true;
     }
 
     /**
@@ -82,7 +84,17 @@ public class HoppersConfig implements Configuration{
         //go through the frogs and move them, each move generate a new config
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                if((i % 2 == 0 && j % 2 == 0) && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a frog
+                if(board[i][j] == 'G' || board[i][j] == 'R'){ //This executes anyway regardless of even odd coordinate
+                    if(isMoveValid(i, j, i - 2, j - 2, false)){
+                        result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
+                    }else if(isMoveValid(i, j, i - 2, j + 2, false)){
+                        result.add(new HoppersConfig(move(i, j, i - 2, j + 2, false, board[i][j])));
+                    }else if(isMoveValid(i, j, i + 2, j - 2, false)){
+                        result.add(new HoppersConfig(move(i, j, i + 2, j - 2, false, board[i][j])));
+                    }else if(isMoveValid(i, j, i + 2, j + 2, false)){
+                        result.add(new HoppersConfig(move(i, j, i + 2, j + 2, false, board[i][j])));
+                    }
+                }if((i % 2 == 0 && j % 2 == 0) && (board[i][j] == 'G' || board[i][j] == 'R')){ //if even row and is a frog
                     //doing vertical and horizontal moves
                     if(isMoveValid(i, j, i - 4, j, true)){
                         result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
@@ -94,16 +106,6 @@ public class HoppersConfig implements Configuration{
                         result.add(new HoppersConfig(move(i, j, i, j + 4, true, board[i][j])));
                     }
                     //doing diagonal moves if is a frog
-                }if(board[i][j] == 'G' || board[i][j] == 'R'){ //This executes anyway regardless of even odd coordinate
-                    if(isMoveValid(i, j, i - 2, j - 2, false)){
-                        result.add(new HoppersConfig(move(i, j, i - 2, j - 2, false, board[i][j])));
-                    }else if(isMoveValid(i, j, i - 2, j + 2, false)){
-                        result.add(new HoppersConfig(move(i, j, i - 2, j + 2, false, board[i][j])));
-                    }else if(isMoveValid(i, j, i + 2, j - 2, false)){
-                        result.add(new HoppersConfig(move(i, j, i + 2, j - 2, false, board[i][j])));
-                    }else if(isMoveValid(i, j, i + 2, j + 2, false)){
-                        result.add(new HoppersConfig(move(i, j, i + 2, j + 2, false, board[i][j])));
-                    }
                 }
             }
         }
@@ -121,8 +123,9 @@ public class HoppersConfig implements Configuration{
      * @param color - the color of the frog
      * @return - a board with frogs moved
      */
-    private char[][] move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color){
-        char[][] copyBoard = board; //creating a copy of the board from this config to move frogs
+    private HoppersConfig move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color){
+        HoppersConfig result = new HoppersConfig(this);
+        char[][] copyBoard = result.getBoard(); //creating a copy of the board from this config to move frogs
 
         copyBoard[newRow][newCol] = color; //moving the frog
 
@@ -159,7 +162,7 @@ public class HoppersConfig implements Configuration{
             }
         }copyBoard[deleteFrogRow][deleteFrogCol] = '.';
         copyBoard[originalRow][originalCol] = '.'; //make the original position valid to jump again
-        return copyBoard;
+        return result;
     }
 
     /**
@@ -242,17 +245,12 @@ public class HoppersConfig implements Configuration{
      */
     @Override
     public boolean equals(Object other) {
+        boolean result = false;
         if(other instanceof HoppersConfig){
             HoppersConfig otherConfig = (HoppersConfig) other;
-            for(int i = 0; i < row; i ++){
-                for(int j = 0; j < col; j++){
-                    if (this.board[i][j] != otherConfig.board[i][j]) {
-                        return false;
-                    }
-                }
-            }
+            result = Arrays.deepEquals(board, otherConfig.board);
         }
-        return true;
+        return result;
     }
 
     /**
@@ -262,13 +260,7 @@ public class HoppersConfig implements Configuration{
      */
     @Override
     public int hashCode(){
-        int result = 0;
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col; j++){
-                result += Character.hashCode(board[i][j]);
-            }
-        }
-        return result;
+        return Arrays.deepHashCode(board);
     }
 
     /**
@@ -278,20 +270,16 @@ public class HoppersConfig implements Configuration{
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        String result = "";
         for(int i = 0; i < row; i++){
             for(int j = 0; j < col; j++){
-                result.append(board[i][j]).append(" ");
+                result += board[i][j] + " ";
             }
-            if(result.length() > 0) {
-                result.setLength(result.length() - 1);  // remove trailing space only if result is not empty
-            }
-            result.append("\n");
+            result = result.substring(0, result.length() - 1);
+            result += "\n";
         }
-        if(result.length() > 0) {
-            result.setLength(result.length() - 1);  // remove trailing newline only if result is not empty
-        }
-        return result.toString();
+        result = result.substring(0, result.length() - 1);
+        return result;
     }
 
     /**
