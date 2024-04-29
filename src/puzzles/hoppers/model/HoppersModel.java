@@ -1,16 +1,12 @@
 package puzzles.hoppers.model;
 
-import puzzles.astro.model.AstroConfig;
 import puzzles.common.Coordinates;
 import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
 import puzzles.common.solver.Solver;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 /**
  * The model for the Hoppers puzzle
@@ -25,14 +21,8 @@ public class HoppersModel {
     /** the current configuration */
     private HoppersConfig currentConfig;
     //Enumeration for representing the different states of the game
-    private enum GameStatus {
-        READY, // initial state
-        ONGOING, // game in progress
-        LOST,
-        WON
-    }
+
     private String filename; // filename
-    private GameStatus gameStatus; //the game's current state
     private Coordinates selectedCoords;
 
     /**
@@ -55,61 +45,62 @@ public class HoppersModel {
     }
 
     /**
-     * Creates a new game
-     * @param filename name of Hopper puzzle
+     * Creates a new model for the Hoppers
+     *
+     * @param filename - name of Hopper puzzle
      */
     public HoppersModel(String filename) throws IOException {
-        this.filename = filename;
-        currentConfig = new HoppersConfig(this.filename);
+        this.filename = filename; //setting the file name
+        currentConfig = new HoppersConfig(this.filename); //creating the initial config of HopperConfig to work with the solver for hints
     }
 
     /**
-     * Get rows
+     * returns the total rows
      *
-     * @return rows of grid
+     * @return the total rows
      */
-    public int getRow() {
+    public int getTotalRow() {
         return currentConfig.row;
     }
 
     /**
-     * Get columns
+     * returns the total cols
      *
-     * @return columns of grid
+     * @return the total cols
      */
-    public int getCol() {
+    public int getTotalCol() {
         return currentConfig.col;
     }
 
     /**
-     * Does the next move for user
-     * Hint
+     * Does the next correct move for the user
+     * based on the starting config using solver
      */
     public void hint() {
-        Solver solver = new Solver();
-        List<Configuration>path = solver.solve(currentConfig);
-        if(path.size() == 1) {
+        Solver solver = new Solver(); //initialize the solver
+        List<Configuration>path = solver.solve(currentConfig); //solve the current config (been moved by user)
+        if(path.isEmpty()) {
+            notifyObservers("No solution!");
+            return;
+        }else if(path.size() == 1) {
             notifyObservers("Already solved!");
             return;
         }
-        else if(path.isEmpty()) {
-            notifyObservers("No solution!");
-            return;
+
+        if(!(path.get(1) instanceof HoppersConfig hoppersConfig)) { //error checking the solver
+            throw new RuntimeException("None HoppersConfig detected!");
         }
-        if(!(path.get(1) instanceof HoppersConfig hoppersConfig)) {
-            throw new RuntimeException("Next step is not AstroConfig!");
-        }
-        this.currentConfig = hoppersConfig;
-        notifyObservers("Next step!");
+        this.currentConfig = hoppersConfig; //setting the config to the config with next move
+        notifyObservers("Next Step!");
     }
 
     /**
-     * Loads a new puzzle configuration from file
-     * @param filename The filename to load the puzzle from
+     * Loads a new puzzle board from file
+     * @param file - The filename to load the puzzle from
      */
-    public void load(String filename) {
-        try {
-            this.filename = filename;
+    public void load(String file) {
+        try { //create a new Hoppers config and make it the new UI
+            this.filename = file;
             this.currentConfig = new HoppersConfig(filename);
             notifyObservers("Loaded: " + filename);
         } catch(IOException e) {
@@ -118,66 +109,69 @@ public class HoppersModel {
     }
 
     /**
-     * Resets the puzzle to the initial configuration based on the current file
+     * Resets the puzzle board to the initial configuration based on the current file
      */
     public void reset() {
-        load(filename);
+        load(filename); //call the load method to
         notifyObservers("Puzzle reset!");
     }
 
     /**
-     * Get cell value of row and column of a cell
+     * Get the value of row and column of a cell
      *
-     * @param coord coordinates (row, col)
+     * @param coordinate - the coordinate representing the row and col of the cell
      * @return the cell value
      */
-    public char getCellValue(Coordinates coord) {
-        int row = coord.row();
-        int col = coord.col();
-        if(row < 0 || row >= getRow() || col < 0 || col >= getCol()) {
-            return '\0';  // empty
+    public char getCellValue(Coordinates coordinate) {
+        int row = coordinate.row();
+        int col = coordinate.col();
+        if(row < 0 || row >= getTotalRow() || col < 0 || col >= getTotalCol()) {
+            System.out.println("Coordinate out of the board");
+            return '\0';
         }
         return currentConfig.getBoard()[row][col];
     }
 
     /**
-     * The method to quit window/game
+     * The method to quit game
+     * it shuts down the model and terminate the task
      */
     public void quit(){
+        System.out.println("Goodbye");
         System.exit(0);
     }
 
     /**
-     * Displays model grid
+     * Displays the board
      *
-     * @return string representation of astro game grid
+     * @return string representation of the Hoppers game board
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("   ");
-        for(int col = 0; col < getCol(); col++) {  // columns
-            sb.append(col + " ");
+        StringBuilder result = new StringBuilder();
+        result.append("   ");
+        for(int col = 0; col < getTotalCol(); col++) {  // columns
+            result.append(col + " ");
         }
-        sb.append("\n" + "  ");
-        for(int col = 0; col < getCol(); col++) {
-            sb.append("--");
+        result.append("\n" + "  ");
+        for(int col = 0; col < getTotalCol(); col++) {
+            result.append("--");
         }
-        sb.append("\n");
-        for(int row = 0; row < getRow(); row++) {  // rows
-            sb.append(row + "| ");
-            for(int col = 0; col < getCol(); col++) {  // display grid
-                sb.append(currentConfig.getBoard()[row][col] + " ");
+        result.append("\n");
+        for(int row = 0; row < getTotalRow(); row++) {  // rows
+            result.append(row + "| ");
+            for(int col = 0; col < getTotalCol(); col++) {  // display grid
+                result.append(currentConfig.getBoard()[row][col] + " ");
             }
-            sb.append("\n");
+            result.append("\n");
         }
-        return sb.toString();
+        return result.toString();
     }
 
     /**
-     * Notify loading file on start
+     * Notify the observer about loading file on start
      *
-     * @param file filename
+     * @param file - filename
      */
     public void notifyLoad(String file) {
         notifyObservers("Loaded " + file);
@@ -185,12 +179,12 @@ public class HoppersModel {
 
     /**
      * Updates status to selected tile
-     * Only can select astronaut or robots
+     * Only can select frogs
      *
-     * @param row row selected
-     * @param col colummn selected
+     * @param row - row selected
+     * @param col - column selected
      */
-    public void select(int row, int col) {
+    public void select(int row, int col) { //todo and here
         char content = currentConfig.getCellValue(new Coordinates(row, col));
         Set<Character> validContents = Set.of('R', 'G');
         if(validContents.contains(content)) {

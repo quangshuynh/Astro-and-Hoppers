@@ -24,60 +24,68 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
-    private Label status;
-    private GridPane game;
-    private Stage stage;
-    private String filename;
-    private HoppersModel model;
-    private FileChooser fileChooser;
-    private Label selectedLabel;
+    private Label status; //the status label
+    private GridPane game; //the main game pane
+    private Stage stage; //the stage of the gui
+    private String filename; //the file used for the current gui display
+    private HoppersModel model; //the model of the MVC
+    private FileChooser fileChooser; //a file chooser to allow file change
+    private Label selectedLabel; //the label selected
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
-    /** Images */
-    private final Image redFrog = getResourceIMG("red_frog.png");
-    private final Image greenFrog = getResourceIMG("green_frog.png");
-    private final Image lilyPad = getResourceIMG("lily_pad.png");
-    private final BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/water.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-    private final Background background = new Background(backgroundImage);
+    //below are images for the Hoppers gui
+    private final Image redFrog = getResourceIMG("red_frog.png"); //the red frog
+    private final Image greenFrog = getResourceIMG("green_frog.png"); //the green frog
+    private final Image lilyPad = getResourceIMG("lily_pad.png"); //the lily pad indicating a valid jump space
+    private final BackgroundImage backgroundImage = new BackgroundImage( new Image( getClass().getResource("resources/water.png").toExternalForm()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT); //the background image
+    private final Background background = new Background(backgroundImage); //the background of the gui
 
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
 
     public void init() throws IOException {
-        filename = getParameters().getRaw().get(0);
-        model = new HoppersModel(filename);
-        model.addObserver(this);
-        fileChooser = new FileChooser();
+        filename = getParameters().getRaw().get(0); //getting the file name
+        model = new HoppersModel(filename); //initializing new model
+        model.addObserver(this); //register this view as an observer of model
+        fileChooser = new FileChooser(); //a file chooser to be initialized
         this.fileChooser.setTitle("Open Hoppers File");
         this.fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files","*.txt"));
         this.fileChooser.setInitialDirectory(new File(Paths.get(".").toAbsolutePath().normalize().toString()));
     }
 
+    /**
+     * The start method of the Hoppers Gui, it sets everything GUI related up
+     *
+     * @param stage - the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws Exception -
+     */
     @Override
     public void start(Stage stage) throws Exception {
-        BorderPane main = new BorderPane(); // main borderpane for everything
-        status = new Label("");  // initialize status
-
-        /** Game Grid (center) */
-        game = new GridPane();  // game grid
-        game.setPadding(new Insets(10, 10, 10, 10));  // set padding
-        for(int row = 0; row < model.getRow(); row++) {
-            for(int col = 0; col < model.getCol(); col++) {
+        BorderPane main = new BorderPane(); // main borderpane for other panes
+        status = new Label("");  // initialize the game status
+        //the center grid
+        game = new GridPane();
+        game.setPadding(new Insets(10, 10, 10, 10));
+        for(int row = 0; row < model.getTotalRow(); row++) {
+            for(int col = 0; col < model.getTotalCol(); col++) {
+                int r = row;
+                int c = col;
                 Label tile = new Label("");
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
                 tile.setBackground(background);
-                int r = row;
-                int c = col;
-                //tile.setOnMouseClicked(e -> select(tile, r, c));
+                tile.setOnMouseClicked(e -> select(tile, r, c));//todo something needs to change here
                 GridPane.setRowIndex(tile, row);
                 GridPane.setColumnIndex(tile, col);
                 game.getChildren().add(tile);
             }
         }
 
-        /** FlowPane Buttons (bottom) */
+        //all the buttons at the bottom of the GUI
         FlowPane fp = new FlowPane();
         fp.setPadding(new Insets(2, 0, 5, 0));
         fp.setAlignment(Pos.CENTER);
@@ -89,32 +97,32 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         hint.setStyle("-fx-font-size:18");
         fp.getChildren().addAll(load, reset, hint);
 
-        /** SetOnAction */
+        //the controller of MVC
         load.setOnAction(e -> {
             File file = fileChooser.showOpenDialog(stage);
             if(file != null){
-                File astroFile = new File(file.getPath());
-                String astroFilename = astroFile.getName();
-                filename = astroFilename;
-                this.model.load(astroFilename);
+                File hoppersFile = new File(file.getPath());
+                String hoppersFilename = hoppersFile.getName();
+                filename = hoppersFilename;
+                this.model.load(hoppersFilename);
             }
         });
         hint.setOnAction(e -> model.hint());
         reset.setOnAction(e -> model.reset());
 
-        /** Status (top) */
+        //the status of the game, top of main border pane
         HBox top = new HBox();
         status.setStyle("-fx-font-size:15");
         top.getChildren().add(status);
         top.setAlignment(Pos.CENTER);
 
-        /** Main adding */
+        //adding to the main pane
         main.setCenter(game);
         main.setTop(top);
         main.setBottom(fp);
 
 
-        /** Scene */
+        //setting up the scene
         Scene scene = new Scene(main);
         this.stage = stage;
         this.stage.setScene(scene);
@@ -125,13 +133,20 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         main.requestFocus();
     }
 
+    /**
+     * The update method used to change the GUI based on user interaction
+     *
+     * @param hoppersModel - the object that wishes to inform this object
+     *                about something that has happened.
+     * @param msg - optional data the server.model can send to the observer
+     */
     @Override
     public void update(HoppersModel hoppersModel, String msg) {
         game.getChildren().clear();
 
-        /** Updating game grid */
-        for(int row = 0; row < hoppersModel.getRow(); row++) {
-            for(int col = 0; col < hoppersModel.getCol(); col++) {
+        //updating the grid
+        for(int row = 0; row < hoppersModel.getTotalRow(); row++) {
+            for(int col = 0; col < hoppersModel.getTotalCol(); col++) {
                 Label tile = new Label("");
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
@@ -153,7 +168,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 Coordinates coordinates = new Coordinates(row, col);
                 char value = hoppersModel.getCellValue(coordinates);
                 switch(value) {
-                    case '*' -> label.setGraphic(new ImageView(lilyPad));
+                    case '.' -> label.setGraphic(new ImageView(lilyPad));
                     case 'R' -> label.setGraphic(new ImageView(redFrog));
                     case 'G' -> label.setGraphic(new ImageView(greenFrog));
                 }
@@ -163,12 +178,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
-    /**
-     * Selecting a tile from game
-     *
-     * @param clicked selected box that is clicked
-     */
-    private void select(Label clicked, int row, int col) {
+    private void select(Label clicked, int row, int col) { //todo and here
         if(selectedLabel != null) {
             selectedLabel.setStyle("-fx-border-width: 0;");
         }
@@ -177,15 +187,20 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     }
 
     /**
-     * Gets resource image
+     * Gets resource images
      *
-     * @param resource resource file
-     * @return resource image
+     * @param resource - resource file
+     * @return the image
      */
     public Image getResourceIMG(String resource) {
         return new Image(Objects.requireNonNull(getClass().getResourceAsStream(RESOURCES_DIR + resource)));
     }
 
+    /**
+     * the main method of the GUI, it launches the GUI
+     *
+     * @param args - commandline input (expect a file input)
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java HoppersPTUI filename");
