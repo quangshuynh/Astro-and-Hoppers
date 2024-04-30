@@ -91,7 +91,7 @@ public class HoppersModel {
             throw new RuntimeException("None HoppersConfig detected!");
         }
         this.currentConfig = hoppersConfig; //setting the config to the config with next move
-        notifyObservers("Next Step!");
+        notifyObservers("Next step!");
     }
     public boolean select(Coordinates selectedCoords){
         boolean result = false; //tells the observer if the selection is valid
@@ -99,11 +99,11 @@ public class HoppersModel {
         char content = currentConfig.getBoard()[selectedCoords.row()][selectedCoords.col()];
         Set<Character> validContents = Set.of('R', 'G');
         if(validContents.contains(content)) {
-            notifyObservers("Selected \"" + content + "\" at (" + selectedCoords.row() + ", " + selectedCoords.col() + ")");
+            notifyObservers("Selected (" + selectedCoords.row() + ", " + selectedCoords.col() + ")");
             result = true;
             this.selectedCoords = selectedCoords;
         } else {  // no piece selected
-            notifyObservers("Invalid selection (" + selectedCoords.row() + ", " + selectedCoords.col() + ")");
+            notifyObservers("No frog at (" + selectedCoords.row() + ", " + selectedCoords.col() + ")");
             selectedCoords = null;
         }
         return result;
@@ -186,7 +186,6 @@ public class HoppersModel {
      * it shuts down the model and terminate the task
      */
     public void quit(){
-        System.out.println("Goodbye");
         System.exit(0);
     }
 
@@ -202,6 +201,7 @@ public class HoppersModel {
         for(int col = 0; col < getTotalCol(); col++) {  // columns
             result.append(col + " ");
         }
+        result.deleteCharAt(result.length() - 1);
         result.append("\n" + "  ");
         for(int col = 0; col < getTotalCol(); col++) {
             result.append("--");
@@ -212,6 +212,7 @@ public class HoppersModel {
             for(int col = 0; col < getTotalCol(); col++) {  // display grid
                 result.append(currentConfig.getBoard()[row][col] + " ");
             }
+            result.deleteCharAt(result.length() -1);
             result.append("\n");
         }
         return result.toString();

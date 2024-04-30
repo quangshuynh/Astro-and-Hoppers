@@ -7,7 +7,18 @@ import puzzles.hoppers.model.HoppersConfig;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * A class used to call the common solver and solve the puzzle
+ *
+ * @author Kai Fan
+ */
 public class Hoppers {
+    /**
+     * The main method used to call the common solver and display solution and step to standard output
+     *
+     * @param args - the command line argument (expect a file)
+     * @throws IOException -
+     */
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
             System.out.println("Usage: java Hoppers filename");
