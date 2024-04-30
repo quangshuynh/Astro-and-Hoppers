@@ -161,7 +161,7 @@ public class AstroConfig implements Configuration{
      * @param col column index
      * @param direction cardinal direction (n, s, e, w)
      */
-    private void checkAndAddNeighbor(int row, int col, Direction direction) {
+    public void checkAndAddNeighbor(int row, int col, Direction direction) {
         int cursorRow = 0;
         int cursorCol = 0;
         switch(direction) {
