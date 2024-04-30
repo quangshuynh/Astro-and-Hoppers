@@ -23,7 +23,7 @@ public class HoppersModel {
     //Enumeration for representing the different states of the game
 
     private String filename; // filename
-    private Coordinates selectedCoords;
+    private Coordinates selectedCoords; //the coordinate selected
 
     /**
      * The view calls this to add itself as an observer.
@@ -87,11 +87,60 @@ public class HoppersModel {
             return;
         }
 
-        if(!(path.get(1) instanceof HoppersConfig hoppersConfig)) { //error checking the solver
+        if(!(path.get(1) instanceof HoppersConfig hoppersConfig)) { //error checking the solver, and getting the next correct step
             throw new RuntimeException("None HoppersConfig detected!");
         }
         this.currentConfig = hoppersConfig; //setting the config to the config with next move
         notifyObservers("Next Step!");
+    }
+    public boolean select(Coordinates selectedCoords){
+        boolean result = false; //tells the observer if the selection is valid
+        //process selected
+        char content = currentConfig.getBoard()[selectedCoords.row()][selectedCoords.col()];
+        Set<Character> validContents = Set.of('R', 'G');
+        if(validContents.contains(content)) {
+            notifyObservers("Selected \"" + content + "\" at (" + selectedCoords.row() + ", " + selectedCoords.col() + ")");
+            result = true;
+            this.selectedCoords = selectedCoords;
+        } else {  // no piece selected
+            notifyObservers("Invalid selection (" + selectedCoords.row() + ", " + selectedCoords.col() + ")");
+            selectedCoords = null;
+        }
+        return result;
+    }
+
+    /**
+     * Updates status to selected tile
+     * Only can select frogs
+     *
+     * @param fromCoordinate - the coordinate from
+     * @param toCoordinate - the coordinate to move to
+     */
+    public void move(Coordinates fromCoordinate, Coordinates toCoordinate) {
+        //process from coordinate
+        char content = currentConfig.getBoard()[fromCoordinate.row()][fromCoordinate.col()];
+        //process to coordinate
+        if(selectedCoords.row() + selectedCoords.col() % 2 == 0){ //process even row col
+            //if can jump
+            if(currentConfig.isMoveValid(fromCoordinate.row(), fromCoordinate.col(), toCoordinate.row(), toCoordinate.col(), true)){
+                currentConfig = currentConfig.move(fromCoordinate.row(), fromCoordinate.col(), toCoordinate.row(), toCoordinate.col(), true, content);
+                notifyObservers("Jumped from (" + fromCoordinate.row() + ", " + fromCoordinate.col() + ") to (" + toCoordinate.row() + ", " + toCoordinate.col() + ")");
+                selectedCoords = null;
+            }else{ //else
+                selectedCoords = null;
+                notifyObservers("Can't jump from (" + fromCoordinate.row() + ", " + fromCoordinate.col() + ") to (" + toCoordinate.row() + ", " + toCoordinate.col() + ")");
+            }
+        }else{ //process odd row col
+            //if can jump
+            if(currentConfig.isMoveValid(fromCoordinate.row(), fromCoordinate.col(), toCoordinate.row(), toCoordinate.col(), false)){
+                currentConfig = currentConfig.move(fromCoordinate.row(), fromCoordinate.col(), toCoordinate.row(), toCoordinate.col(), false, content);
+                notifyObservers("Jumped from (" + fromCoordinate.row() + ", " + fromCoordinate.col() + ") to (" + toCoordinate.row() + ", " + toCoordinate.col() + ")");
+                selectedCoords = null;
+            }else{ //else
+                selectedCoords = null;
+                notifyObservers("Can't jump from (" + fromCoordinate.row() + ", " + fromCoordinate.col() + ") to (" + toCoordinate.row() + ", " + toCoordinate.col() + ")");
+            }
+        }
     }
 
     /**
@@ -175,24 +224,5 @@ public class HoppersModel {
      */
     public void notifyLoad(String file) {
         notifyObservers("Loaded " + file);
-    }
-
-    /**
-     * Updates status to selected tile
-     * Only can select frogs
-     *
-     * @param row - row selected
-     * @param col - column selected
-     */
-    public void select(int row, int col) { //todo and here
-        char content = currentConfig.getCellValue(new Coordinates(row, col));
-        Set<Character> validContents = Set.of('R', 'G');
-        if(validContents.contains(content)) {
-            notifyObservers("Selected \"" + content + "\" at (" + row + ", " + col + ")");
-            selectedCoords = new Coordinates(row, col);
-        } else {  // no piece selected
-            selectedCoords = null;
-            notifyObservers("No piece at (" + row + ", " + col + ")");
-        }
     }
 }

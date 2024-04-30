@@ -30,7 +30,12 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     private String filename; //the file used for the current gui display
     private HoppersModel model; //the model of the MVC
     private FileChooser fileChooser; //a file chooser to allow file change
-    private Label selectedLabel; //the label selected
+    private Label selectedLabel_1; //the first label selected
+    private Coordinates selectedLabel_1_Coordinate; //the first label's coordinate
+    private Label selectedLabel_2; //the second label selected
+    private Coordinates selectedLabel_2_Coordinate; //the second label's coordinate
+    private boolean validFirstSelect; //keep track if first select is valid
+
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
 
@@ -78,7 +83,7 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
                 tile.setMinSize(ICON_SIZE, ICON_SIZE);
                 tile.setAlignment(Pos.CENTER);
                 tile.setBackground(background);
-                tile.setOnMouseClicked(e -> select(tile, r, c));//todo something needs to change here
+                tile.setOnMouseClicked(e -> select(tile, r, c));
                 GridPane.setRowIndex(tile, row);
                 GridPane.setColumnIndex(tile, col);
                 game.getChildren().add(tile);
@@ -178,12 +183,35 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
-    private void select(Label clicked, int row, int col) { //todo and here
-        if(selectedLabel != null) {
-            selectedLabel.setStyle("-fx-border-width: 0;");
+    private void select(Label clicked, int row, int col) {
+        if(selectedLabel_1 != null) {
+            selectedLabel_1.setStyle("-fx-border-width: 0;");
         }
-        model.select(row, col);  // notify observer & select
-        selectedLabel = clicked;
+        if(selectedLabel_1 == null && selectedLabel_1_Coordinate == null){
+            selectedLabel_1 = clicked; //first select
+            selectedLabel_1_Coordinate = new Coordinates(row, col);
+            validFirstSelect = model.select(selectedLabel_1_Coordinate);
+        }
+        if(!validFirstSelect){ //reset if first select is invalid
+            selectedLabel_1 = null;
+            selectedLabel_1_Coordinate = null;
+        }
+
+        if(validFirstSelect && !clicked.equals(selectedLabel_1) && !new Coordinates(row, col).equals(selectedLabel_1_Coordinate)){ //second select
+            selectedLabel_2 = clicked;
+            selectedLabel_2_Coordinate = new Coordinates(row, col);
+            moveIt();
+        }
+    }
+
+    private void moveIt(){
+        model.move(selectedLabel_1_Coordinate, selectedLabel_2_Coordinate);  // notify observer & select
+        //resetting the select
+        selectedLabel_1 = null;
+        selectedLabel_1_Coordinate = null;
+        selectedLabel_2 = null;
+        selectedLabel_2_Coordinate = null;
+        validFirstSelect = false;
     }
 
     /**
