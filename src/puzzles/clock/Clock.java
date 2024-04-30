@@ -2,6 +2,8 @@ package puzzles.clock;
 
 import puzzles.common.solver.Solver;
 import puzzles.common.solver.Configuration;
+
+import java.io.IOException;
 import java.util.*;
 
 
@@ -14,6 +16,12 @@ import java.util.*;
  */
 
 public class Clock {
+    /**
+     * Main method used to call common solver and display solution and steps to output
+     *
+     * @param args command line argument (expect for file)
+     * @throws IOException if file not found
+     */
     public static void main(String[] args) {
         if (args.length != 3) {
             System.out.println("Usage: java Clock hours start end");

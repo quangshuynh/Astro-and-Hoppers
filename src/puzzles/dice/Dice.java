@@ -14,6 +14,12 @@ import java.util.*;
  * @author Quang Huynh (qth9368)
  */
 public class Dice {
+    /**
+     * Main method used to call common solver and display solution and steps to output
+     *
+     * @param args command line argument (expect for file)
+     * @throws IOException if file not found
+     */
     public static void main(String[] args) throws IOException {
         if (args.length < 3) {
             System.out.println("Usage: java Dice start end die1 die2...");
