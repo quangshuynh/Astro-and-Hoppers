@@ -106,21 +106,30 @@ public class AstroModel {
      */
     public void getHint() {
         Solver solver = new Solver();
-        List<Configuration>path = solver.solve(currentConfig);
-        if(path.size() == 1) {
+        List<Configuration> path = solver.solve(currentConfig);
+        if(currentConfig.isSolution()) {  // check if current solution
             notifyObservers("Already solved!");
             return;
         }
-        else if(path.isEmpty()) {
+        if(path.isEmpty() || (path.size() == 1 && !path.get(0).isSolution())) {
             notifyObservers("No solution!");
             return;
         }
-        if(!(path.get(1) instanceof AstroConfig astroConfig)) {  // if next step is not part of astroconfig
-            throw new RuntimeException("Next step is not AstroConfig!");
+        Configuration lastConfig = path.get(path.size() - 1);
+        if(!lastConfig.isSolution()) {
+            notifyObservers("No solution!");
+            return;
         }
-        this.currentConfig = astroConfig;
-        notifyObservers("Next step!");
+        if(path.size() > 1 && path.get(1) instanceof AstroConfig) {
+            Configuration nextConfig = path.get(1);
+            this.currentConfig = (AstroConfig) nextConfig;
+            notifyObservers("Next step!");
+        } else {
+            notifyObservers("No solution!");
+        }
     }
+
+
 
     /**
      * Resets the puzzle to the initial configuration based on the current file
