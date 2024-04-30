@@ -182,23 +182,24 @@ public class AstroConfig implements Configuration{
         int nextCol = col + cursorCol;
         boolean foundPiece = false;
         while(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols) {  // continue until boundary
-            if(!grid[nextRow][nextCol].equals(".")) {  // continue until piece is found
+            if(!grid[nextRow][nextCol].equals(".") &&
+                    !grid[nextRow][nextCol].equals(grid[goalCoords.row()][goalCoords.col()])) {  // piece found and it's not the goal
                 foundPiece = true;
                 break;
             }
             nextRow += cursorRow;
             nextCol += cursorCol;
         }
-        if(foundPiece && !(nextRow == goalCoords.row() && nextCol == goalCoords.col())) {  // move one tile less
-            nextRow -= cursorRow;
+        if(foundPiece) {
+            nextRow -= cursorRow;  // move one tile less
             nextCol -= cursorCol;
         }
         if(nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols && !(nextRow == row && nextCol == col)) {
-            if(grid[nextRow][nextCol].equals(".") || (nextRow == goalCoords.row() && nextCol == goalCoords.col())) {
+            if(grid[nextRow][nextCol].equals(".") || (grid[row][col].equals("A") && nextRow == goalCoords.row() && nextCol == goalCoords.col())) {
                 AstroConfig newConfig = new AstroConfig(this);
                 newConfig.grid[row][col] = ".";
                 newConfig.grid[nextRow][nextCol] = grid[row][col];
-                if(grid[row][col].equals("A")) {  // update astro coordinates
+                if(grid[row][col].equals("A")) {  // update astro coordinates if it's the astronaut
                     newConfig.astroCoords = new Coordinates(nextRow, nextCol);
                 }
                 this.neighbors.add(newConfig);
