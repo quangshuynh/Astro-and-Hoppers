@@ -116,7 +116,7 @@ public class HoppersModel {
      * @param fromCoordinate - the coordinate from
      * @param toCoordinate - the coordinate to move to
      */
-    public void move(Coordinates fromCoordinate, Coordinates toCoordinate) { //todo and here
+    public void move(Coordinates fromCoordinate, Coordinates toCoordinate) {
         //process from coordinate
         char content = currentConfig.getBoard()[fromCoordinate.row()][fromCoordinate.col()];
         //process to coordinate
