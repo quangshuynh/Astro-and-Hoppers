@@ -77,21 +77,28 @@ public class HoppersModel {
      * based on the starting config using solver
      */
     public void hint() {
-        Solver solver = new Solver(); //initialize the solver
-        List<Configuration>path = solver.solve(currentConfig); //solve the current config (been moved by user)
-        if(path.isEmpty()) {
-            notifyObservers("No solution!");
-            return;
-        }else if(path.size() == 1) {
+        Solver solver = new Solver();
+        List<Configuration> path = solver.solve(currentConfig);
+        if(currentConfig.isSolution()) {  // check if current solution
             notifyObservers("Already solved!");
             return;
         }
-
-        if(!(path.get(1) instanceof HoppersConfig hoppersConfig)) { //error checking the solver, and getting the next correct step
-            throw new RuntimeException("None HoppersConfig detected!");
+        if(path.isEmpty() || (path.size() == 1 && !path.get(0).isSolution())) {
+            notifyObservers("No solution!");
+            return;
         }
-        this.currentConfig = hoppersConfig; //setting the config to the config with next move
-        notifyObservers("Next step!");
+        Configuration lastConfig = path.get(path.size() - 1);
+        if(!lastConfig.isSolution()) {
+            notifyObservers("No solution!");
+            return;
+        }
+        if(path.size() > 1 && path.get(1) instanceof HoppersConfig) {
+            Configuration nextConfig = path.get(1);
+            this.currentConfig = (HoppersConfig) nextConfig;
+            notifyObservers("Next step!");
+        } else {
+            notifyObservers("No solution!");
+        }
     }
     public boolean select(Coordinates selectedCoords){
         boolean result = false; //tells the observer if the selection is valid
