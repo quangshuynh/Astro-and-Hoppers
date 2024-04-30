@@ -96,7 +96,7 @@ public class HoppersConfig implements Configuration {
                         result.add(new HoppersConfig(move(i, j, i + 2, j + 2, false, board[i][j])));
                     }
                 }
-                if ((i % 2 == 0 && j % 2 == 0) && (board[i][j] == 'G' || board[i][j] == 'R')) { //if even row and is a frog
+                if (((i + j) % 2 == 0) && (board[i][j] == 'G' || board[i][j] == 'R')) { //if even row and is a frog
                     //doing vertical and horizontal moves
                     if (isMoveValid(i, j, i - 4, j, true)) {
                         result.add(new HoppersConfig(move(i, j, i - 4, j, true, board[i][j])));
@@ -127,9 +127,7 @@ public class HoppersConfig implements Configuration {
      */
     public HoppersConfig move(int originalRow, int originalCol, int newRow, int newCol, boolean longJump, char color) {
         HoppersConfig result = new HoppersConfig(this);
-        char[][] copyBoard = result.board; //creating a copy of the board from this config to move frogs
-
-        copyBoard[newRow][newCol] = color; //moving the frog
+        result.board[newRow][newCol] = color;//moving the frog
 
         //process deleting
         int deleteFrogRow = -1;
@@ -162,8 +160,8 @@ public class HoppersConfig implements Configuration {
             deleteFrogRow = originalRow - 1;
             deleteFrogCol = originalCol - 1;
         }
-        copyBoard[deleteFrogRow][deleteFrogCol] = '.';
-        copyBoard[originalRow][originalCol] = '.'; //make the original position valid to jump again
+        result.board[deleteFrogRow][deleteFrogCol] = '.';
+        result.board[originalRow][originalCol] = '.'; //make the original position valid to jump again
         return result;
     }
 
