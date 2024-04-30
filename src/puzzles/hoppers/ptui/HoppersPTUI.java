@@ -8,12 +8,23 @@ import puzzles.hoppers.model.HoppersModel;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * A UI class representing Hoppers PTUI, it is the View and Controller part of the MVC structure
+ *
+ * @author Kai Fan
+ */
 public class HoppersPTUI implements Observer<HoppersModel, String> {
     private HoppersModel model;
     private Coordinates selectedLabel_1_Coordinate; //the first label's coordinate
     private Coordinates selectedLabel_2_Coordinate; //the second label's coordinate
     private boolean validFirstSelect; //keep track if first select is valid
 
+    /**
+     * the initialize method used to set up internal states
+     *
+     * @param filename - the name of the file to load from command line
+     * @throws IOException - if file corrupt or not found
+     */
     public void init(String filename) throws IOException {
         this.model = new HoppersModel(filename);
         this.model.addObserver(this);
@@ -23,6 +34,14 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         displayHelp();
     }
 
+    /**
+     * the update method used to inform the Model if anything changes, it is used by controller
+     *
+     * @param model - the object that wishes to inform this object
+     *                about something that has happened.
+     * @param data - optional data the server.model can send to the observer
+     *
+     */
     @Override
     public void update(HoppersModel model, String data) {
         // for demonstration purposes
@@ -30,6 +49,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         System.out.println(model);
     }
 
+    /**
+     * displays the valid format for file input
+     */
     private void displayHelp() {
         System.out.println( "h(int)              -- hint next move" );
         System.out.println( "l(oad) filename     -- load new puzzle file" );
@@ -38,6 +60,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         System.out.println( "r(eset)             -- reset the current game" );
     }
 
+    /**
+     * build the PTUI and display it into standard input
+     */
     public void run() {
         Scanner in = new Scanner( System.in );
         for ( ; ; ) {
@@ -72,6 +97,13 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
             }
         }
     }
+
+    /**
+     * the select method used to validate if a selected cell is valid
+     *
+     * @param row - the selected row
+     * @param col - the selected col
+     */
     private void select(int row, int col) {
         if(selectedLabel_1_Coordinate == null){
             selectedLabel_1_Coordinate = new Coordinates(row, col); //first select
@@ -86,6 +118,9 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         }
     }
 
+    /**
+     * a helper function calls the model's move function, and reset the selected coordinate's states
+     */
     private void moveIt(){
         model.move(selectedLabel_1_Coordinate, selectedLabel_2_Coordinate);  // notify observer & select
         //resetting the select
@@ -94,10 +129,18 @@ public class HoppersPTUI implements Observer<HoppersModel, String> {
         validFirstSelect = false;
     }
 
+    /**
+     * the quit method shuts down the model and the PTUI
+     */
     public void quit(){
         model.quit();
     }
 
+    /**
+     * the main method used to tell PTUI to start up
+     *
+     * @param args - expect a file name passed in here
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java HoppersPTUI filename");

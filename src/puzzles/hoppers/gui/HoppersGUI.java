@@ -23,6 +23,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+/**
+ * The GUI class representing the View and Controller of MVC model
+ *
+ * @author Kai Fan
+ */
 public class HoppersGUI extends Application implements Observer<HoppersModel, String> {
     private Label status; //the status label
     private GridPane game; //the main game pane
@@ -49,6 +54,11 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
     /** The size of all icons, in square dimension */
     private final static int ICON_SIZE = 75;
 
+    /**
+     * the optional initialize method, in this case, it is used to initialize internal fields
+     *
+     * @throws IOException - if file corrupt or not found
+     */
     public void init() throws IOException {
         filename = getParameters().getRaw().get(0); //getting the file name
         model = new HoppersModel(filename); //initializing new model
@@ -183,6 +193,13 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * A select method used to keep track of the cell selected
+     *
+     * @param clicked - the label that has been interacted with
+     * @param row - the row of that label
+     * @param col - the col of that label
+     */
     private void select(Label clicked, int row, int col) {
         if(selectedLabel_1 != null) {
             selectedLabel_1.setStyle("-fx-border-width: 0;");
@@ -204,6 +221,9 @@ public class HoppersGUI extends Application implements Observer<HoppersModel, St
         }
     }
 
+    /**
+     * A helper function that calls the model's move method and reset the selected states
+     */
     private void moveIt(){
         model.move(selectedLabel_1_Coordinate, selectedLabel_2_Coordinate);  // notify observer & select
         //resetting the select
